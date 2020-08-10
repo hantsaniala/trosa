@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "930863666876",
+    "firebase_url": "https://trosa-a4b16.firebaseio.com",
+    "project_id": "trosa-a4b16",
+    "storage_bucket": "trosa-a4b16.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:930863666876:android:c8896ad340aae4f1d522b9",
+        "android_client_info": {
+          "package_name": "mg.hantsaniala.trosa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "930863666876-72gi0jqee044ei0mr0e0vfg2blfav9b3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIfQqyepxXUBJgxbfq2me6Ah89jPoG5-w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "930863666876-72gi0jqee044ei0mr0e0vfg2blfav9b3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
