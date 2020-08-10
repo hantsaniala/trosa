@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:Trosa/const.dart';
+import 'package:Trosa/notifier/trosa_notifier.dart';
+import 'package:Trosa/screens/trosa/trosa_screen.dart';
+import 'package:provider/provider.dart';
 
-void main() {
-  runApp(MyApp());
-}
+// BUG : Display lag on GT-i9500
+void main() => runApp(MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => TrosaNotifier(),
+        )
+      ],
+      child: MyApp(),
+    ));
 
 class MyApp extends StatelessWidget {
   @override
@@ -10,76 +20,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Trosa',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: KPrimaryColor, //createMaterialColor(Color(0xFFFECE00)),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'Lisitra'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: ListView(
-        children: <Widget>[
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.all(8),
-                child: Card(
-                  child: Column(
-                    children: <Widget>[
-                      ListTile(
-                        leading: Icon(Icons.arrow_upward),
-                        title: Text('10 000 MGA'),
-                        subtitle: Text('Eléo'),
-                        trailing: Text('12/09/2020'),
-                      ),
-                      ButtonBar(
-                        alignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          FlatButton(
-                            child: Text('Paid'),
-                            onPressed: () {},
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ),
+      debugShowCheckedModeBanner: false,
+      home: TrosaPage(),
     );
   }
 }
