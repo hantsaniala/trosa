@@ -34,15 +34,6 @@ class Trosa {
       map[DatabaseProvider.COLUMN_ID] = id;
     }
     return map;
-    /* return {
-      'id': id,
-      'amount': amount,
-      'owner': owner,
-      'date': date,
-      'dueDate': dueDate,
-      'isInflow': isInflow,
-      'createdAt': createdAt
-    }; */
   }
 
   Trosa.fromMap(Map<String, dynamic> data) {
@@ -55,13 +46,5 @@ class Trosa {
         DateTime.tryParse(data[DatabaseProvider.COLUMN_DUEDATE]));
     isInflow = data[DatabaseProvider.COLUMN_ISINFLOW] == 1 ? true : false;
     note = data[DatabaseProvider.COLUMN_NOTE];
-
-    /* id = data['id'];
-    amount = data['amount'];
-    owner = data['owner'];
-    date = data['date'];
-    dueDate = data['dueDate'];
-    isInflow = data['isInflow'];
-    createdAt = data['createdAt']; */
   }
 }

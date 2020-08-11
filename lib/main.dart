@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Trosa',
       theme: ThemeData(
-        primarySwatch: KPrimaryColor, //createMaterialColor(Color(0xFFFECE00)),
+        primarySwatch: KPrimaryColor,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       debugShowCheckedModeBanner: false,

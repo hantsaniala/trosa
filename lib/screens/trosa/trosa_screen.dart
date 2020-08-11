@@ -1,5 +1,3 @@
-//import 'dart:async';
-//import 'dart:convert';
 import 'package:Trosa/screens/trosa/trosa_about.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -10,8 +8,6 @@ import 'package:Trosa/notifier/trosa_notifier.dart';
 import 'package:Trosa/screens/trosa/trosa_form_screen.dart';
 import 'package:Trosa/screens/trosa/components/trosa_card.dart';
 import 'package:provider/provider.dart';
-
-//import 'package:http/http.dart' as http;
 
 class TrosaPage extends StatefulWidget {
   TrosaPage({Key key}) : super(key: key);
@@ -27,20 +23,6 @@ class _TrosaPageState extends State<TrosaPage> {
       new MaterialPageRoute(builder: (context) => new TrosaAddPage()),
     );
   }
-
-  // Future<String> getData() async {
-  //   var response = await http.get(
-  //       Uri.encodeFull("https://jsonplaceholder.cypress.io/todos/1"),
-  //       headers: {"Accept": "application/json"});
-
-  //   this.setState(() {
-  //     data = json.decode(response.body);
-  //   });
-
-  //   print(data[1]["title"]);
-
-  //   return "Success!";
-  // }
 
   @override
   void initState() {

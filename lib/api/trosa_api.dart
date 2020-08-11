@@ -11,18 +11,6 @@ getTrosa(TrosaNotifier trosaNotifier) async {
   _totalInflow = await DatabaseProvider.db.totalInflow();
   _totalOutflow = await DatabaseProvider.db.totalOutflow();
 
-/*  List<Trosa> _trosaList = [];
-
-   QuerySnapshot snapshot =
-      await Firestore.instance.collection('Trosa').getDocuments();
-
-  snapshot.documents.forEach((document) {
-    Trosa trosa = Trosa.fromMap(document.data);
-    _trosaList.add(trosa);
-  });
-
-  trosaNotifier.trosaList = _trosaList; */
-
   _balance = _totalInflow - _totalOutflow;
 
   trosaNotifier.trosaList = _trosaList;
