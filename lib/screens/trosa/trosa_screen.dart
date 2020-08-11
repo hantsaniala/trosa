@@ -108,18 +108,14 @@ class _TrosaPageState extends State<TrosaPage> {
                           Text(
                             'Ar ' +
                                 formatter
-                                    .format(trosaNotifier.totalInflow != null
-                                        ? trosaNotifier.totalInflow
-                                        : 0.0)
+                                    .format(trosaNotifier.totalInflow ?? 0.0)
                                     .toString(),
                             style: TextStyle(fontSize: 20, color: Colors.green),
                           ),
                           Text(
                             'Ar ' +
                                 formatter
-                                    .format(trosaNotifier.totalOutflow != null
-                                        ? trosaNotifier.totalOutflow
-                                        : 0.0)
+                                    .format(trosaNotifier.totalOutflow ?? 0.0)
                                     .toString(),
                             style: TextStyle(fontSize: 20, color: Colors.red),
                           ),
@@ -139,9 +135,7 @@ class _TrosaPageState extends State<TrosaPage> {
                           Text(
                             'Ar ' +
                                 formatter
-                                    .format(trosaNotifier.balance != null
-                                        ? trosaNotifier.balance
-                                        : 0.0)
+                                    .format(trosaNotifier.balance ?? 0.0)
                                     .toString(),
                             style: TextStyle(
                                 fontSize: 30,
