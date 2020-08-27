@@ -8,6 +8,7 @@ import 'package:Trosa/notifier/trosa_notifier.dart';
 import 'package:Trosa/screens/trosa/trosa_form_screen.dart';
 import 'package:Trosa/screens/trosa/components/trosa_card.dart';
 import 'package:provider/provider.dart';
+import 'package:share/share.dart';
 
 class TrosaPage extends StatefulWidget {
   TrosaPage({Key key}) : super(key: key);
@@ -44,6 +45,9 @@ class _TrosaPageState extends State<TrosaPage> {
       print('Refreshing the Trosa list');
       getTrosa(trosaNotifier);
     }
+
+    /* final RenderBox box = context.findRenderObject(); */
+    final String appURL = 'http://shorturl.at/cflmC';
 
     Future<bool> _confirmDeleteTrosa() async {
       return await showDialog(
