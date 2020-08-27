@@ -1,6 +1,8 @@
 import 'package:Trosa/api/trosa_api.dart';
+import 'package:Trosa/components/currency_input_formatter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:Trosa/const.dart';
 import 'package:Trosa/db/sqflite_provider.dart';
@@ -18,6 +20,7 @@ class TrosaAddPage extends StatefulWidget {
 
 class _TrosaAddPageState extends State<TrosaAddPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final formatter = new NumberFormat('###,###', 'fr_FR');
   FocusNode focusNode;
   Trosa _currentTrosa;
 
@@ -88,6 +91,10 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                 Padding(
                   padding: const EdgeInsets.all(20),
                   child: TextFormField(
+                    inputFormatters: [
+                      WhitelistingTextInputFormatter.digitsOnly,
+                      CurrencyInputFormatter()
+                    ],
                     initialValue: (trosaNotifier.currentTrosa != null)
                         ? trosaNotifier.currentTrosa.amount.toString()
                         : null,
