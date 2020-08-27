@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:package_info/package_info.dart';
 
 class TrosaAboutPage extends StatefulWidget {
   TrosaAboutPage({Key key}) : super(key: key);
@@ -8,10 +10,29 @@ class TrosaAboutPage extends StatefulWidget {
 }
 
 class _TrosaAboutPageState extends State<TrosaAboutPage> {
+  PackageInfo _packageInfo = PackageInfo(
+    appName: 'Unknown',
+    packageName: 'Unknown',
+    version: 'Unknown',
+    buildNumber: 'Unknown',
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _initPackageInfo();
+  }
+
+  Future<void> _initPackageInfo() async {
+    final PackageInfo info = await PackageInfo.fromPlatform();
+    setState(() {
+      _packageInfo = info;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Mombamomba ny Trosa'),
@@ -37,7 +58,7 @@ class _TrosaAboutPageState extends State<TrosaAboutPage> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: Text(
-                    'v1.0.5+10',
+                    _packageInfo.version + '.' + _packageInfo.buildNumber,
                     style: Theme.of(context).textTheme.subtitle1,
                   ),
                 ),
