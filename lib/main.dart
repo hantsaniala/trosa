@@ -5,14 +5,22 @@ import 'package:Trosa/screens/trosa/trosa_screen.dart';
 import 'package:provider/provider.dart';
 
 // BUG : Display lag on GT-i9500
-void main() => runApp(MultiProvider(
+// BUG : App stuck on fullscreen
+// FEATURE : Notification reminder for due date
+// TODO : Update splash screen
+
+void main() {
+  runApp(
+    MultiProvider(
       providers: [
         ChangeNotifierProvider(
           create: (context) => TrosaNotifier(),
         )
       ],
-      child: MyApp(),
-    ));
+      child: Trosa(),
+    ),
+  );
+}
 
 class Trosa extends StatelessWidget {
   @override
