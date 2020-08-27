@@ -38,7 +38,7 @@ class Trosa {
 
   Trosa.fromMap(Map<String, dynamic> data) {
     id = data[DatabaseProvider.COLUMN_ID].toString();
-    amount = double.tryParse(data[DatabaseProvider.COLUMN_AMOUNT]);
+    amount = double.tryParse(data[DatabaseProvider.COLUMN_AMOUNT] ?? "0.0");
     owner = data[DatabaseProvider.COLUMN_OWNER];
     date = Timestamp.fromDate(
         DateTime.tryParse(data[DatabaseProvider.COLUMN_DATE]));

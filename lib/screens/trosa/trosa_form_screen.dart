@@ -96,7 +96,7 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                       CurrencyInputFormatter()
                     ],
                     initialValue: (trosaNotifier.currentTrosa != null)
-                        ? trosaNotifier.currentTrosa.amount.toString()
+                        ? formatter.format(trosaNotifier.currentTrosa.amount)
                         : null,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
@@ -121,8 +121,11 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                       }
                       return null;
                     },
-                    onSaved: (amount) =>
-                        _currentTrosa.amount = double.tryParse(amount),
+                    onSaved: (amount) {
+                      var newAmount = formatter.parse(amount.toString());
+                      _currentTrosa.amount =
+                          double.tryParse(newAmount.toString());
+                    },
                   ),
                 ),
                 Padding(
