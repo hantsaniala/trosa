@@ -6,6 +6,7 @@ import 'package:Trosa/notifier/trosa_notifier.dart';
 getTrosa(TrosaNotifier trosaNotifier) async {
   List<Trosa> _trosaList = [];
   double _totalInflow = 0.0, _totalOutflow = 0.0, _balance = 0.0;
+  String _sortType = 'date';
 
   _trosaList = await DatabaseProvider.db.getTrosa();
   _totalInflow = await DatabaseProvider.db.totalInflow();
@@ -17,4 +18,6 @@ getTrosa(TrosaNotifier trosaNotifier) async {
   trosaNotifier.totalInflow = _totalInflow;
   trosaNotifier.totalOutflow = _totalOutflow;
   trosaNotifier.balance = _balance;
+  trosaNotifier.currentTrosaList = _trosaList;
+  trosaNotifier.sortType = _sortType;
 }

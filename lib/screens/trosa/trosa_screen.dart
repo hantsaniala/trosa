@@ -171,7 +171,7 @@ class _TrosaPageState extends State<TrosaPage> {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ListView.builder(
-                  itemCount: trosaNotifier.trosaList.length,
+                  itemCount: trosaNotifier.currentTrosaList.length,
                   itemBuilder: (BuildContext context, int index) {
                     return Dismissible(
                       onDismissed: (dismissDirection) => {},
@@ -179,10 +179,10 @@ class _TrosaPageState extends State<TrosaPage> {
                         bool confirmDelete = await _confirmDeleteTrosa();
                         if (confirmDelete) {
                           DatabaseProvider.db
-                              .delete(trosaNotifier.trosaList[index]);
+                              .delete(trosaNotifier.currentTrosaList[index]);
                           getTrosa(trosaNotifier);
-                          trosaNotifier
-                              .deleteTrosa(trosaNotifier.trosaList[index]);
+                          trosaNotifier.deleteTrosa(
+                              trosaNotifier.currentTrosaList[index]);
                         }
                       },
                       background: Container(
@@ -196,35 +196,40 @@ class _TrosaPageState extends State<TrosaPage> {
                       child: GestureDetector(
                         onTap: () {
                           trosaNotifier.currentTrosa =
-                              trosaNotifier.trosaList[index];
+                              trosaNotifier.currentTrosaList[index];
                           _gotoAddPage();
                         },
                         child: Padding(
                           padding: const EdgeInsets.only(
                               left: 5, right: 5, top: 2, bottom: 0),
                           child: TrosaCard(
-                            isInflow: trosaNotifier.trosaList[index].isInflow,
+                            isInflow:
+                                trosaNotifier.currentTrosaList[index].isInflow,
                             amount: formatter
-                                .format(trosaNotifier.trosaList[index].amount)
+                                .format(trosaNotifier
+                                    .currentTrosaList[index].amount)
                                 .toString(),
-                            owner: trosaNotifier.trosaList[index].owner,
+                            owner: trosaNotifier.currentTrosaList[index].owner,
                             dueDate:
-                                trosaNotifier.trosaList[index].dueDate != null
+                                trosaNotifier.currentTrosaList[index].dueDate !=
+                                        null
                                     ? DateFormat('d/M/y').format(trosaNotifier
-                                        .trosaList[index].dueDate
+                                        .currentTrosaList[index].dueDate
                                         .toDate())
                                     : DateFormat('d/M/y')
                                         .format(DateTime.now())
                                         .toString(),
-                            date: trosaNotifier.trosaList[index].date != null
+                            date: trosaNotifier.currentTrosaList[index].date !=
+                                    null
                                 ? DateFormat('d/M/y').format(trosaNotifier
-                                    .trosaList[index].date
+                                    .currentTrosaList[index].date
                                     .toDate())
                                 : DateFormat('d/M/y')
                                     .format(DateTime.now())
                                     .toString(),
-                            note: trosaNotifier.trosaList[index].note != null
-                                ? trosaNotifier.trosaList[index].note
+                            note: trosaNotifier.currentTrosaList[index].note !=
+                                    null
+                                ? trosaNotifier.currentTrosaList[index].note
                                 : '',
                           ),
                         ),
