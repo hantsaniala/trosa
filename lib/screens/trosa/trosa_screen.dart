@@ -37,6 +37,7 @@ class _TrosaPageState extends State<TrosaPage> {
   Widget build(BuildContext context) {
     TrosaNotifier trosaNotifier = Provider.of<TrosaNotifier>(context);
     var size = MediaQuery.of(context).size;
+    String sortType = 'date';
 
     final formatter = new NumberFormat('###,###', 'fr');
     Future<void> _refreshList() async {
@@ -74,6 +75,37 @@ class _TrosaPageState extends State<TrosaPage> {
       );
     }
 
+    // TODO : Save filter type
+    void choiceAction(String choice) {
+      if (choice == Constants.About) {
+        Navigator.push(
+          context,
+          new MaterialPageRoute(builder: (context) => new TrosaAboutPage()),
+        );
+      } else if (choice == Constants.SortByAmount) {
+        setState(() {
+          trosaNotifier.sortType = 'amount';
+          trosaNotifier.currentTrosaList.sort((a, b) => trosaNotifier.sortAscend
+              ? a.amount.compareTo(b.amount)
+              : b.amount.compareTo(a.amount));
+        });
+      } else if (choice == Constants.SortByDate) {
+        setState(() {
+          trosaNotifier.sortType = 'date';
+          trosaNotifier.currentTrosaList.sort((a, b) => trosaNotifier.sortAscend
+              ? a.date.compareTo(b.date)
+              : b.date.compareTo(a.date));
+        });
+      } else if (choice == Constants.SortByOwner) {
+        setState(() {
+          trosaNotifier.sortType = 'owner';
+          trosaNotifier.currentTrosaList.sort((a, b) => trosaNotifier.sortAscend
+              ? a.owner.compareTo(b.owner)
+              : b.owner.compareTo(a.owner));
+        });
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Trosa"),
@@ -81,15 +113,28 @@ class _TrosaPageState extends State<TrosaPage> {
           // TODO : Share the app and note the app on store
           /* IconButton(icon: Icon(Icons.favorite), onPressed: () {}), */
           IconButton(
-            icon: Icon(Icons.help_outline),
-            onPressed: () {
-              Navigator.push(
-                context,
-                new MaterialPageRoute(
-                    builder: (context) => new TrosaAboutPage()),
-              );
+              icon: Icon(Icons.share),
+              onPressed: () {
+                Share.share(
+                  "Ndao hampiasa an'ito $appURL",
+                  /*subject: 'Ndao hampiasa',
+                   sharePositionOrigin:
+                        box.localToGlobal(Offset.zero) & box.size */
+                );
+              }),
+          // TODO : Use menu item instead of direct page
+          PopupMenuButton<String>(
+            icon: Icon(Icons.more_vert),
+            onSelected: choiceAction,
+            itemBuilder: (BuildContext context) {
+              return Constants.menuChoices.map((String choice) {
+                return PopupMenuItem<String>(
+                  value: choice,
+                  child: Text(choice),
+                );
+              }).toList();
             },
-          )
+          ),
         ],
       ),
       body: RefreshIndicator(
@@ -162,9 +207,80 @@ class _TrosaPageState extends State<TrosaPage> {
             ),
             Padding(
               padding: const EdgeInsets.only(right: 18, left: 18, top: 22),
-              child: Text(
-                "Lisitr'ireo Trosa",
-                style: Theme.of(context).textTheme.headline6,
+              child: Row(
+                children: [
+                  Text(
+                    "Lisitr’ireo Trosa",
+                    style: Theme.of(context).textTheme.headline6,
+                  ),
+                  Spacer(),
+                  /* Expanded(
+                    child: TextField(
+                      // TODO : UI Animation expand en touch
+                      decoration: InputDecoration(
+                        fillColor: Colors.yellowAccent,
+                        contentPadding: EdgeInsets.only(left: 15),
+                        border: OutlineInputBorder(
+                            /* borderRadius: BorderRadius.circular(5), */
+                            ),
+                        suffixIcon: IconButton(
+                            icon: Icon(Icons.search), onPressed: () {}),
+                      ),
+                      // TODO : Filter Trosa list dynamicaly based on text value change
+                      onChanged: (value) {},
+                    ),
+                  ), */
+
+                  IconButton(
+                      icon: Icon(trosaNotifier.sortAscend
+                          ? Icons.arrow_downward
+                          : Icons.arrow_upward),
+                      onPressed: () {
+                        print(trosaNotifier.sortType);
+                        setState(() {
+                          switch (trosaNotifier.sortType) {
+                            case 'date':
+                              trosaNotifier.currentTrosaList.sort((a, b) =>
+                                  trosaNotifier.sortAscend
+                                      ? a.date.compareTo(b.date)
+                                      : b.date.compareTo(a.date));
+                              break;
+                            case 'amount':
+                              trosaNotifier.currentTrosaList.sort((a, b) =>
+                                  trosaNotifier.sortAscend
+                                      ? a.amount.compareTo(b.amount)
+                                      : b.amount.compareTo(a.amount));
+                              break;
+                            case 'owner':
+                              trosaNotifier.currentTrosaList.sort((a, b) =>
+                                  trosaNotifier.sortAscend
+                                      ? a.owner.compareTo(b.owner)
+                                      : b.owner.compareTo(a.owner));
+                              break;
+                          }
+                          trosaNotifier.sortAscend = !trosaNotifier.sortAscend;
+
+                          // TODO : Sort without calling the drop down
+                        });
+                        print('\n');
+                        for (var item in trosaNotifier.currentTrosaList) {
+                          print(item.owner + ' - ' + item.amount.toString());
+                        }
+                      }),
+                  // TODO : Sort Trosa list (only search result if exist) by name, amount, dueDate, type, date
+                  PopupMenuButton<String>(
+                    icon: Icon(Icons.sort),
+                    onSelected: choiceAction,
+                    itemBuilder: (BuildContext context) {
+                      return Constants.sortChoices.map((String choice) {
+                        return PopupMenuItem<String>(
+                          value: choice,
+                          child: Text(choice),
+                        );
+                      }).toList();
+                    },
+                  ),
+                ],
               ),
             ),
             Expanded(
@@ -252,4 +368,19 @@ class _TrosaPageState extends State<TrosaPage> {
       ),
     );
   }
+}
+
+class Constants {
+  static const String About = 'About';
+
+  static const String SortByDate = 'By Date';
+  static const String SortByOwner = 'By Owner';
+  static const String SortByAmount = 'By Amount';
+
+  static const List<String> menuChoices = <String>[About];
+  static const List<String> sortChoices = <String>[
+    SortByDate,
+    SortByOwner,
+    SortByAmount
+  ];
 }
