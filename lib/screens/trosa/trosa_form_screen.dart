@@ -76,10 +76,13 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
     TrosaNotifier trosaNotifier =
         Provider.of<TrosaNotifier>(context, listen: false);
     DateTime _selectedDate;
+
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text('Hampiditra Trosa'),
       ),
+      // FIXME : Form stay behind the keyboard
       body: ListView(
         children: <Widget>[
           Form(
@@ -99,16 +102,15 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                         ? formatter.format(trosaNotifier.currentTrosa.amount)
                         : null,
                     keyboardType: TextInputType.number,
+                    textAlign: TextAlign.end,
                     decoration: InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: 'Ohatrinona',
                         suffix: Text('MGA'),
                         suffixIcon: IconButton(
                           icon: _currentTrosa.isInflow
-                              ? Icon(Icons.arrow_downward,
-                                  color: Colors.green, size: 30)
-                              : Icon(Icons.arrow_upward,
-                                  color: Colors.red, size: 30),
+                              ? Icon(Icons.add, color: Colors.green, size: 30)
+                              : Icon(Icons.remove, color: Colors.red, size: 30),
                           onPressed: () {
                             setState(() {
                               _currentTrosa.isInflow = !_currentTrosa.isInflow;
@@ -132,6 +134,7 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                   padding: const EdgeInsets.all(20),
                   child: TextFormField(
                     initialValue: _currentTrosa.owner,
+                    textCapitalization: TextCapitalization.words,
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
                     decoration: InputDecoration(

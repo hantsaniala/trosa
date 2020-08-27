@@ -26,28 +26,38 @@ class TrosaCard extends StatelessWidget {
       child: Column(
         children: <Widget>[
           ListTile(
-            leading: Icon(
-              isInflow ? Icons.arrow_downward : Icons.arrow_upward,
-              color: isInflow ? Colors.green : Colors.red,
-              size: 40,
+            leading: Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    isInflow ? Icons.add : Icons.remove,
+                    color: isInflow ? Colors.green : Colors.red,
+                    size: 35,
+                  ),
+                ],
+              ),
             ),
-            title: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
                   'Ar ' + amount.toString(),
                   style: TextStyle(fontSize: 18),
                 ),
-                Text(' — ' + owner,
+                Text(owner,
                     style: Theme.of(context).textTheme.bodyText1,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1),
               ],
             ),
-            subtitle: Text(
-              note,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 2,
+            subtitle: Padding(
+              padding: const EdgeInsets.only(top: 10, bottom: 5),
+              child: Text(
+                note,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+              ),
             ),
             trailing: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

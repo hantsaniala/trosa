@@ -38,7 +38,7 @@ class _TrosaPageState extends State<TrosaPage> {
     TrosaNotifier trosaNotifier = Provider.of<TrosaNotifier>(context);
     var size = MediaQuery.of(context).size;
 
-    final formatter = new NumberFormat('###,000', 'fr');
+    final formatter = new NumberFormat('###,###', 'fr');
     Future<void> _refreshList() async {
       print('Refreshing the Trosa list');
       getTrosa(trosaNotifier);
@@ -78,6 +78,8 @@ class _TrosaPageState extends State<TrosaPage> {
       appBar: AppBar(
         title: Text("Trosa"),
         actions: <Widget>[
+          // TODO : Share the app and note the app on store
+          /* IconButton(icon: Icon(Icons.favorite), onPressed: () {}), */
           IconButton(
             icon: Icon(Icons.help_outline),
             onPressed: () {
@@ -102,6 +104,13 @@ class _TrosaPageState extends State<TrosaPage> {
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
                     children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Vola ho raisina'),
+                          Text('Vola mila aloha')
+                        ],
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
