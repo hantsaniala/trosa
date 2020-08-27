@@ -14,14 +14,13 @@ void main() => runApp(MultiProvider(
       child: MyApp(),
     ));
 
-class MyApp extends StatelessWidget {
+class Trosa extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Trosa',
       theme: ThemeData(
         primarySwatch: KPrimaryColor,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       debugShowCheckedModeBanner: false,
       home: TrosaPage(),
