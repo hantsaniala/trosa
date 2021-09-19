@@ -23,23 +23,20 @@ class TrosaCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Column(
-        children: <Widget>[
-          ListTile(
-            leading: Container(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    isInflow ? Icons.add : Icons.remove,
-                    color: isInflow ? Colors.green : Colors.red,
-                    size: 35,
-                  ),
-                ],
-              ),
-            ),
-            title: Column(
+      child: ListTile(
+        dense: true,
+        leading: Icon(
+          isInflow ? Icons.add : Icons.remove,
+          color: isInflow ? Colors.green : Colors.red,
+          size: 35,
+        ),
+        title: SizedBox(
+          height: 40,
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
                 Text(
                   'Ar ' + amount.toString(),
@@ -51,30 +48,53 @@ class TrosaCard extends StatelessWidget {
                     maxLines: 1),
               ],
             ),
-            subtitle: Padding(
-              padding: const EdgeInsets.only(top: 10, bottom: 5),
-              child: Text(
-                note,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 2,
+          ),
+        ),
+        subtitle: Text(
+          note,
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+        ),
+        trailing: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            SizedBox(
+              width: 80,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Icon(
+                    Icons.calendar_today,
+                    size: 12,
+                  ),
+                  Text(
+                    " " + dueDate.toString(),
+                    style: TextStyle(fontSize: 13),
+                  ),
+                ],
               ),
             ),
-            trailing: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: <Widget>[
-                Text(
-                  'Haverina ny ' + dueDate.toString(),
-                  style: TextStyle(fontSize: 15),
-                ),
-                Text(
-                  'Natao ny ' + date.toString(),
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
-                ),
-              ],
+            SizedBox(
+              width: 80,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Icon(
+                    Icons.drive_file_rename_outline,
+                    size: 12,
+                  ),
+                  Text(
+                    " " + date.toString(),
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w400),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
+        isThreeLine: true,
       ),
     );
   }

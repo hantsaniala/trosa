@@ -38,7 +38,6 @@ class _TrosaPageState extends State<TrosaPage> {
   Widget build(BuildContext context) {
     TrosaNotifier trosaNotifier = Provider.of<TrosaNotifier>(context);
     var size = MediaQuery.of(context).size;
-    String sortType = 'date';
 
     final formatter = new NumberFormat('###,###', 'fr');
     Future<void> _refreshList() async {
@@ -181,7 +180,7 @@ class _TrosaPageState extends State<TrosaPage> {
                         ],
                       ),
                       SizedBox(
-                        height: size.height * .05,
+                        height: size.height * .03,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -211,7 +210,7 @@ class _TrosaPageState extends State<TrosaPage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(right: 18, left: 18, top: 22),
+              padding: const EdgeInsets.only(right: 18, left: 18, top: 18),
               child: Row(
                 children: [
                   Text(
@@ -292,7 +291,9 @@ class _TrosaPageState extends State<TrosaPage> {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ListView.builder(
+                  shrinkWrap: true,
                   itemCount: trosaNotifier.currentTrosaList.length,
+                  itemExtent: 77,
                   itemBuilder: (BuildContext context, int index) {
                     return Dismissible(
                       onDismissed: (dismissDirection) => {},

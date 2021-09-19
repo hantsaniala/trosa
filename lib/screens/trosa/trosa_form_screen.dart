@@ -95,7 +95,7 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                   padding: const EdgeInsets.all(20),
                   child: TextFormField(
                     inputFormatters: [
-                      WhitelistingTextInputFormatter.digitsOnly,
+                      FilteringTextInputFormatter.digitsOnly,
                       CurrencyInputFormatter()
                     ],
                     initialValue: (trosaNotifier.currentTrosa != null)
