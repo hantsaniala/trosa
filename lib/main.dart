@@ -6,8 +6,11 @@ import 'package:provider/provider.dart';
 
 // BUG : Display lag on GT-i9500
 // BUG : App stuck on fullscreen
-// FEATURE : Notification reminder for due date
+
 // TODO : Update splash screen
+
+// FEATURE : Notification reminder for due date
+// FEATURE : Widget for descktop (resume and add)
 
 void main() {
   runApp(

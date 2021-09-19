@@ -68,7 +68,7 @@ class _TrosaAboutPageState extends State<TrosaAboutPage> {
               height: size.height * .02,
             ),
             Text(
-                "Application natao handraisana naoty an'ireo trosa tokony haloa sy mila takiana.",
+                "Application natao handraisana naoty ireo trosa tokony haloa sy mila takiana.",
                 style: Theme.of(context).textTheme.subtitle1),
             SizedBox(
               height: size.height * .05,

@@ -47,7 +47,8 @@ class _TrosaPageState extends State<TrosaPage> {
     }
 
     /* final RenderBox box = context.findRenderObject(); */
-    final String appURL = 'http://shorturl.at/cflmC';
+    // TODO : Update file on drive
+    final String appURL = 'https://apkpure.com/p/mg.hantsaniala.trosa';
 
     Future<bool> _confirmDeleteTrosa() async {
       return await showDialog(
@@ -157,7 +158,7 @@ class _TrosaPageState extends State<TrosaPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('Vola ho raisina'),
-                          Text('Vola mila aloha')
+                          Text('Vola mila haloa')
                         ],
                       ),
                       Row(
@@ -214,7 +215,7 @@ class _TrosaPageState extends State<TrosaPage> {
               child: Row(
                 children: [
                   Text(
-                    "Lisitr’ireo Trosa",
+                    "Lisitr'ireo Trosa",
                     style: Theme.of(context).textTheme.headline6,
                   ),
                   Spacer(),
@@ -375,11 +376,11 @@ class _TrosaPageState extends State<TrosaPage> {
 }
 
 class Constants {
-  static const String About = 'About';
+  static const String About = 'Mombamomba';
 
-  static const String SortByDate = 'By Date';
-  static const String SortByOwner = 'By Owner';
-  static const String SortByAmount = 'By Amount';
+  static const String SortByDate = 'Daty';
+  static const String SortByOwner = 'Anarana';
+  static const String SortByAmount = 'Sandany';
 
   static const List<String> menuChoices = <String>[About];
   static const List<String> sortChoices = <String>[
