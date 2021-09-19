@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:Trosa/const.dart';
 import 'package:Trosa/db/sqflite_provider.dart';
 import 'package:Trosa/models/trosa.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -81,6 +80,35 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text('Hampiditra Trosa'),
+        actions: <Widget>[
+          FlatButton(
+            textColor: Colors.black,
+            onPressed: () {
+              // FIXME: DRY with save button at the end
+              // TODO: Show button only when one the fields is updated
+              FocusScope.of(context).requestFocus(new FocusNode());
+              if (!_formKey.currentState.validate()) return;
+              _formKey.currentState.save();
+              setState(() {
+                if (trosaNotifier.currentTrosa != null) {
+                  trosaNotifier.currentTrosa = _currentTrosa;
+                  DatabaseProvider.db.update(_currentTrosa);
+                } else {
+                  trosaNotifier.addTrosa(_currentTrosa);
+                  DatabaseProvider.db.insert(_currentTrosa);
+                }
+              });
+              getTrosa(trosaNotifier);
+              trosaNotifier.currentTrosa = null;
+              Navigator.pop(context);
+            },
+            child: Icon(
+              Icons.check,
+              size: 30,
+            ),
+            shape: CircleBorder(side: BorderSide(color: Colors.transparent)),
+          ),
+        ],
       ),
       // FIXME : Form stay behind the keyboard
       body: ListView(
@@ -201,61 +229,60 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                     },
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child:
-                      Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                    Padding(
-                      padding: EdgeInsets.only(right: 8.0),
-                      child: FlatButton(
-                        color: Colors.grey[300],
-                        textColor: Colors.black,
-                        padding: EdgeInsets.all(10.0),
-                        splashColor: Colors.blueGrey[100],
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: Text(
-                          "Hanajanona",
-                          style: TextStyle(fontSize: 20.0),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 8.0),
-                      child: FlatButton(
-                        color: KPrimaryColor,
-                        textColor: Colors.black,
-                        padding: EdgeInsets.all(10.0),
-                        splashColor: Colors.greenAccent,
-                        onPressed: () {
-                          FocusScope.of(context).requestFocus(new FocusNode());
-                          if (!_formKey.currentState.validate()) return;
-                          _formKey.currentState.save();
-                          setState(() {
-                            if (trosaNotifier.currentTrosa != null) {
-                              trosaNotifier.currentTrosa = _currentTrosa;
-                              DatabaseProvider.db.update(_currentTrosa);
-                            } else {
-                              trosaNotifier.addTrosa(_currentTrosa);
-                              DatabaseProvider.db.insert(_currentTrosa);
-                            }
-                            ;
-                          });
-                          getTrosa(trosaNotifier);
-                          trosaNotifier.currentTrosa = null;
-                          Navigator.pop(context);
-                        },
-                        child: Text(
-                          trosaNotifier.currentTrosa == null
-                              ? "Hampiditra"
-                              : "Hanova",
-                          style: TextStyle(fontSize: 20.0),
-                        ),
-                      ),
-                    ),
-                  ]),
-                ),
+                // Padding(
+                //   padding: const EdgeInsets.all(20),
+                //   child:
+                //       Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                //     Padding(
+                //       padding: EdgeInsets.only(right: 8.0),
+                //       child: FlatButton(
+                //         color: Colors.grey[300],
+                //         textColor: Colors.black,
+                //         padding: EdgeInsets.all(10.0),
+                //         splashColor: Colors.blueGrey[100],
+                //         onPressed: () {
+                //           Navigator.pop(context);
+                //         },
+                //         child: Text(
+                //           "Hanajanona",
+                //           style: TextStyle(fontSize: 20.0),
+                //         ),
+                //       ),
+                //     ),
+                //     Padding(
+                //       padding: EdgeInsets.only(left: 8.0),
+                //       child: FlatButton(
+                //         color: KPrimaryColor,
+                //         textColor: Colors.black,
+                //         padding: EdgeInsets.all(10.0),
+                //         splashColor: Colors.greenAccent,
+                //         onPressed: () {
+                //           FocusScope.of(context).requestFocus(new FocusNode());
+                //           if (!_formKey.currentState.validate()) return;
+                //           _formKey.currentState.save();
+                //           setState(() {
+                //             if (trosaNotifier.currentTrosa != null) {
+                //               trosaNotifier.currentTrosa = _currentTrosa;
+                //               DatabaseProvider.db.update(_currentTrosa);
+                //             } else {
+                //               trosaNotifier.addTrosa(_currentTrosa);
+                //               DatabaseProvider.db.insert(_currentTrosa);
+                //             }
+                //           });
+                //           getTrosa(trosaNotifier);
+                //           trosaNotifier.currentTrosa = null;
+                //           Navigator.pop(context);
+                //         },
+                //         child: Text(
+                //           trosaNotifier.currentTrosa == null
+                //               ? "Hampiditra"
+                //               : "Hanova",
+                //           style: TextStyle(fontSize: 20.0),
+                //         ),
+                //       ),
+                //     ),
+                //   ]),
+                // ),
               ],
             ),
           ),
