@@ -1,6 +1,6 @@
 # Trosa
 
-Application natao handraisana naoty an'ireo trosa tokony aloha sy mila takiana.
+Application natao handraisana naoty an'ireo trosa tokony haloa sy mila takiana.
 
 ## Credits
 
