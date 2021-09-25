@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:Trosa/notifier/trosa_notifier.dart';
 
 class TrosaAddPage extends StatefulWidget {
-  TrosaAddPage({Key key}) : super(key: key);
+  TrosaAddPage({Key? key}) : super(key: key);
 
   @override
   _TrosaAddPageState createState() => _TrosaAddPageState();
@@ -20,8 +20,8 @@ class TrosaAddPage extends StatefulWidget {
 class _TrosaAddPageState extends State<TrosaAddPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final formatter = new NumberFormat('###,###', 'fr_FR');
-  FocusNode focusNode;
-  Trosa _currentTrosa;
+  FocusNode? focusNode;
+  Trosa? _currentTrosa;
 
   @override
   void initState() {
@@ -35,22 +35,21 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
       _currentTrosa = trosaNotifier.currentTrosa;
     } else {
       print('Adding new trosa');
-      _currentTrosa = Trosa();
-      _currentTrosa.isInflow = true;
-      _currentTrosa.dueDate = Timestamp.fromDate(DateTime.now());
+      _currentTrosa =
+          new Trosa("", 0, "", Timestamp.fromDate(DateTime.now()), true, "");
     }
   }
 
   @override
   void dispose() {
-    focusNode.dispose();
+    focusNode?.dispose();
     super.dispose();
   }
 
 // Date Picker
   Future<DateTime> _selectDate(DateTime selectedDate) async {
     DateTime _initialDate = selectedDate;
-    final DateTime _pickedDate = await showDatePicker(
+    final DateTime? _pickedDate = await showDatePicker(
       context: context,
       initialDate: _initialDate,
       firstDate: DateTime.now().subtract(Duration(days: 365)),
@@ -87,8 +86,8 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
               // FIXME: DRY with save button at the end
               // TODO: Show button only when one the fields is updated
               FocusScope.of(context).requestFocus(new FocusNode());
-              if (!_formKey.currentState.validate()) return;
-              _formKey.currentState.save();
+              if (!_formKey.currentState!.validate()) return;
+              _formKey.currentState?.save();
               setState(() {
                 if (trosaNotifier.currentTrosa != null) {
                   trosaNotifier.currentTrosa = _currentTrosa;
@@ -126,8 +125,8 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                       FilteringTextInputFormatter.digitsOnly,
                       CurrencyInputFormatter()
                     ],
-                    initialValue: (trosaNotifier.currentTrosa != null)
-                        ? formatter.format(trosaNotifier.currentTrosa.amount)
+                    initialValue: (trosaNotifier.currentTrosa?.amount != null)
+                        ? formatter.format(trosaNotifier.currentTrosa?.amount)
                         : null,
                     keyboardType: TextInputType.number,
                     textAlign: TextAlign.end,
@@ -136,24 +135,30 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                         labelText: 'Ohatrinona',
                         suffix: Text('MGA'),
                         suffixIcon: IconButton(
-                          icon: _currentTrosa.isInflow
+                          icon: (_currentTrosa?.isInflow != null &&
+                                  _currentTrosa?.isInflow == true)
                               ? Icon(Icons.add, color: Colors.green, size: 30)
                               : Icon(Icons.remove, color: Colors.red, size: 30),
                           onPressed: () {
                             setState(() {
-                              _currentTrosa.isInflow = !_currentTrosa.isInflow;
+                              if (_currentTrosa?.isInflow != null &&
+                                  _currentTrosa?.isInflow == true) {
+                                _currentTrosa?.isInflow = false;
+                              } else {
+                                _currentTrosa?.isInflow = true;
+                              }
                             });
                           },
                         )),
-                    validator: (String value) {
-                      if (value.isEmpty) {
+                    validator: (String? value) {
+                      if (value!.isEmpty) {
                         return 'Mila soratana hoe ohatrinona azafady.';
                       }
                       return null;
                     },
                     onSaved: (amount) {
                       var newAmount = formatter.parse(amount.toString());
-                      _currentTrosa.amount =
+                      _currentTrosa?.amount =
                           double.tryParse(newAmount.toString());
                     },
                   ),
@@ -161,7 +166,7 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                 Padding(
                   padding: const EdgeInsets.all(20),
                   child: TextFormField(
-                    initialValue: _currentTrosa.owner,
+                    initialValue: _currentTrosa?.owner,
                     textCapitalization: TextCapitalization.words,
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
@@ -169,13 +174,13 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                       border: OutlineInputBorder(),
                       labelText: 'Ilay olona',
                     ),
-                    validator: (String value) {
-                      if (value.isEmpty) {
+                    validator: (String? value) {
+                      if (value!.isEmpty) {
                         return 'Mila fenoina ny anaran\'ilay olona.';
                       }
                       return null;
                     },
-                    onSaved: (String owner) => _currentTrosa.owner = owner,
+                    onSaved: (String? owner) => _currentTrosa?.owner = owner,
                   ),
                 ),
                 Padding(
@@ -193,7 +198,7 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                             SizedBox(width: 16.0),
                             Text(
                                 DateFormat.yMMMEd()
-                                    .format(_currentTrosa.dueDate.toDate()),
+                                    .format(_currentTrosa!.dueDate.toDate()),
                                 style: TextStyle(
                                     color: Colors.black54,
                                     fontWeight: FontWeight.bold)),
@@ -202,11 +207,11 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                         ),
                         onPressed: () async {
                           FocusScope.of(context).requestFocus(FocusNode());
-                          DateTime _pickerDate =
-                              await _selectDate(_currentTrosa.dueDate.toDate());
+                          DateTime _pickerDate = await _selectDate(
+                              _currentTrosa!.dueDate.toDate());
                           setState(() {
                             _selectedDate = _pickerDate;
-                            _currentTrosa.dueDate =
+                            _currentTrosa?.dueDate =
                                 Timestamp.fromDate(_selectedDate);
                           });
                         },
@@ -217,72 +222,18 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                 Padding(
                   padding: const EdgeInsets.all(20),
                   child: TextFormField(
-                    initialValue: _currentTrosa.note,
+                    initialValue: _currentTrosa?.note,
                     keyboardType: TextInputType.multiline,
                     maxLines: 3,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: 'Fanamarihana',
                     ),
-                    onSaved: (String note) {
-                      _currentTrosa.note = note;
+                    onSaved: (String? note) {
+                      _currentTrosa?.note = note;
                     },
                   ),
                 ),
-                // Padding(
-                //   padding: const EdgeInsets.all(20),
-                //   child:
-                //       Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                //     Padding(
-                //       padding: EdgeInsets.only(right: 8.0),
-                //       child: FlatButton(
-                //         color: Colors.grey[300],
-                //         textColor: Colors.black,
-                //         padding: EdgeInsets.all(10.0),
-                //         splashColor: Colors.blueGrey[100],
-                //         onPressed: () {
-                //           Navigator.pop(context);
-                //         },
-                //         child: Text(
-                //           "Hanajanona",
-                //           style: TextStyle(fontSize: 20.0),
-                //         ),
-                //       ),
-                //     ),
-                //     Padding(
-                //       padding: EdgeInsets.only(left: 8.0),
-                //       child: FlatButton(
-                //         color: KPrimaryColor,
-                //         textColor: Colors.black,
-                //         padding: EdgeInsets.all(10.0),
-                //         splashColor: Colors.greenAccent,
-                //         onPressed: () {
-                //           FocusScope.of(context).requestFocus(new FocusNode());
-                //           if (!_formKey.currentState.validate()) return;
-                //           _formKey.currentState.save();
-                //           setState(() {
-                //             if (trosaNotifier.currentTrosa != null) {
-                //               trosaNotifier.currentTrosa = _currentTrosa;
-                //               DatabaseProvider.db.update(_currentTrosa);
-                //             } else {
-                //               trosaNotifier.addTrosa(_currentTrosa);
-                //               DatabaseProvider.db.insert(_currentTrosa);
-                //             }
-                //           });
-                //           getTrosa(trosaNotifier);
-                //           trosaNotifier.currentTrosa = null;
-                //           Navigator.pop(context);
-                //         },
-                //         child: Text(
-                //           trosaNotifier.currentTrosa == null
-                //               ? "Hampiditra"
-                //               : "Hanova",
-                //           style: TextStyle(fontSize: 20.0),
-                //         ),
-                //       ),
-                //     ),
-                //   ]),
-                // ),
               ],
             ),
           ),

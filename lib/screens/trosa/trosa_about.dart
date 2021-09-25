@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 
 class TrosaAboutPage extends StatefulWidget {
-  TrosaAboutPage({Key key}) : super(key: key);
+  TrosaAboutPage({Key? key}) : super(key: key);
 
   @override
   _TrosaAboutPageState createState() => _TrosaAboutPageState();

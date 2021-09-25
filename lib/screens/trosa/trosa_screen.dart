@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 
 class TrosaPage extends StatefulWidget {
-  TrosaPage({Key key}) : super(key: key);
+  const TrosaPage({Key key = const Key('trosa_key')}) : super(key: key);
 
   @override
   _TrosaPageState createState() => _TrosaPageState();
@@ -90,22 +90,22 @@ class _TrosaPageState extends State<TrosaPage> {
         setState(() {
           trosaNotifier.sortType = 'amount';
           trosaNotifier.currentTrosaList.sort((a, b) => trosaNotifier.sortAscend
-              ? a.amount.compareTo(b.amount)
-              : b.amount.compareTo(a.amount));
+              ? a!.amount!.compareTo(b!.amount!)
+              : b!.amount!.compareTo(a!.amount!));
         });
       } else if (choice == Constants.SortByDate) {
         setState(() {
           trosaNotifier.sortType = 'date';
           trosaNotifier.currentTrosaList.sort((a, b) => trosaNotifier.sortAscend
-              ? a.date.compareTo(b.date)
-              : b.date.compareTo(a.date));
+              ? a!.date!.compareTo(b!.date!)
+              : b!.date!.compareTo(a!.date!));
         });
       } else if (choice == Constants.SortByOwner) {
         setState(() {
           trosaNotifier.sortType = 'owner';
           trosaNotifier.currentTrosaList.sort((a, b) => trosaNotifier.sortAscend
-              ? a.owner.compareTo(b.owner)
-              : b.owner.compareTo(a.owner));
+              ? a!.owner!.compareTo(b!.owner!)
+              : b!.owner!.compareTo(a!.owner!));
         });
       }
     }
@@ -198,7 +198,7 @@ class _TrosaPageState extends State<TrosaPage> {
                             style: TextStyle(
                                 fontSize: 30,
                                 fontWeight: FontWeight.w300,
-                                color: (trosaNotifier.balance <= 0)
+                                color: (trosaNotifier.balance! <= 0)
                                     ? Colors.red
                                     : Colors.green),
                           ),
@@ -246,30 +246,26 @@ class _TrosaPageState extends State<TrosaPage> {
                             case 'date':
                               trosaNotifier.currentTrosaList.sort((a, b) =>
                                   trosaNotifier.sortAscend
-                                      ? a.date.compareTo(b.date)
-                                      : b.date.compareTo(a.date));
+                                      ? a!.date!.compareTo(b!.date!)
+                                      : b!.date!.compareTo(a!.date!));
                               break;
                             case 'amount':
                               trosaNotifier.currentTrosaList.sort((a, b) =>
                                   trosaNotifier.sortAscend
-                                      ? a.amount.compareTo(b.amount)
-                                      : b.amount.compareTo(a.amount));
+                                      ? a!.amount!.compareTo(b!.amount!)
+                                      : b!.amount!.compareTo(a!.amount!));
                               break;
                             case 'owner':
                               trosaNotifier.currentTrosaList.sort((a, b) =>
                                   trosaNotifier.sortAscend
-                                      ? a.owner.compareTo(b.owner)
-                                      : b.owner.compareTo(a.owner));
+                                      ? a!.owner!.compareTo(b!.owner!)
+                                      : b!.owner!.compareTo(a!.owner!));
                               break;
                           }
                           trosaNotifier.sortAscend = !trosaNotifier.sortAscend;
 
                           // TODO : Sort without calling the drop down
                         });
-                        print('\n');
-                        for (var item in trosaNotifier.currentTrosaList) {
-                          print(item.owner + ' - ' + item.amount.toString());
-                        }
                       }),
                   // TODO : Sort Trosa list (only search result if exist) by name, amount, dueDate, type, date
                   PopupMenuButton<String>(
@@ -318,40 +314,30 @@ class _TrosaPageState extends State<TrosaPage> {
                       child: GestureDetector(
                         onTap: () {
                           trosaNotifier.currentTrosa =
-                              trosaNotifier.currentTrosaList[index];
+                              trosaNotifier.currentTrosaList[index]!;
                           _gotoAddPage();
                         },
                         child: Padding(
                           padding: const EdgeInsets.only(
                               left: 5, right: 5, top: 2, bottom: 0),
                           child: TrosaCard(
+                            key: ValueKey(index),
                             isInflow:
-                                trosaNotifier.currentTrosaList[index].isInflow,
+                                trosaNotifier.currentTrosaList[index]!.isInflow,
                             amount: formatter
                                 .format(trosaNotifier
-                                    .currentTrosaList[index].amount)
+                                    .currentTrosaList[index]?.amount)
                                 .toString(),
-                            owner: trosaNotifier.currentTrosaList[index].owner,
-                            dueDate:
-                                trosaNotifier.currentTrosaList[index].dueDate !=
-                                        null
-                                    ? DateFormat('d/M/y').format(trosaNotifier
-                                        .currentTrosaList[index].dueDate
-                                        .toDate())
-                                    : DateFormat('d/M/y')
-                                        .format(DateTime.now())
-                                        .toString(),
-                            date: trosaNotifier.currentTrosaList[index].date !=
+                            owner: trosaNotifier.currentTrosaList[index]!.owner,
+                            dueDate: DateFormat('d/M/y').format(trosaNotifier
+                                .currentTrosaList[index]!.dueDate
+                                .toDate()),
+                            date: DateFormat('d/M/y').format(trosaNotifier
+                                .currentTrosaList[index]!.date!
+                                .toDate()),
+                            note: trosaNotifier.currentTrosaList[index]!.note !=
                                     null
-                                ? DateFormat('d/M/y').format(trosaNotifier
-                                    .currentTrosaList[index].date
-                                    .toDate())
-                                : DateFormat('d/M/y')
-                                    .format(DateTime.now())
-                                    .toString(),
-                            note: trosaNotifier.currentTrosaList[index].note !=
-                                    null
-                                ? trosaNotifier.currentTrosaList[index].note
+                                ? trosaNotifier.currentTrosaList[index]!.note
                                 : '',
                           ),
                         ),

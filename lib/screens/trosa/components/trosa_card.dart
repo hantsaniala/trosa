@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
 class TrosaCard extends StatelessWidget {
-  final bool isInflow;
-  final String amount;
-  final String owner;
-  final String dueDate;
-  final String date;
-  final String note;
+  final bool? isInflow;
+  final String? amount;
+  final String? owner;
+  final String? dueDate;
+  final String? date;
+  final String? note;
+  final List? data;
+
   const TrosaCard({
-    Key key,
+    Key? key,
     this.data,
     this.amount,
     this.owner,
@@ -18,16 +20,14 @@ class TrosaCard extends StatelessWidget {
     this.note,
   }) : super(key: key);
 
-  final List data;
-
   @override
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
         dense: true,
         leading: Icon(
-          isInflow ? Icons.add : Icons.remove,
-          color: isInflow ? Colors.green : Colors.red,
+          isInflow ?? true ? Icons.add : Icons.remove,
+          color: isInflow ?? true ? Colors.green : Colors.red,
           size: 35,
         ),
         title: SizedBox(
@@ -42,7 +42,7 @@ class TrosaCard extends StatelessWidget {
                   'Ar ' + amount.toString(),
                   style: TextStyle(fontSize: 18),
                 ),
-                Text(owner,
+                Text(owner ?? "",
                     style: Theme.of(context).textTheme.bodyText1,
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1),
@@ -51,7 +51,7 @@ class TrosaCard extends StatelessWidget {
           ),
         ),
         subtitle: Text(
-          note,
+          note ?? "",
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
         ),
