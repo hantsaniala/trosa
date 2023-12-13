@@ -46,6 +46,7 @@ dependencies:
   flutter_local_notifications: ^8.2.0
   flutter_native_timezone: ^2.0.0
   device_info: ^2.0.3
+  get: ^4.6.6
 
 dev_dependencies:
   provider: ^5.0.0
