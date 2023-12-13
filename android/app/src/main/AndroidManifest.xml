@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <application
-        android:name="io.flutter.app.FlutterApplication"
+        android:name="${applicationName}"
         android:label="Trosa"
         android:icon="@mipmap/launcher_icon">
         <activity
