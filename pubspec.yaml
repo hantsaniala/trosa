@@ -28,26 +28,24 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.3
-  flutter_native_splash: ^1.2.3 # https://pub.dev/packages/flutter_native_splash
+  flutter_native_splash: ^2.2.16 # https://pub.dev/packages/flutter_native_splash
   http: any #^0.11.3
-  flutter_svg : ^0.22.0
-  google_fonts: ^2.1.0
+  flutter_svg : ^1.0.3
+  google_fonts: ^6.1.0
   intl: ^0.17.0
-  flutter_masked_text: ^0.8.0
-  path: ^1.6.4
-  sqflite: ^2.0.0+4
+  path: ^1.8.3
+  sqflite: ^2.3.0
   sqflite_migration: ^0.3.0
 
-  flutter_datetime_picker: ^1.2.8
-  sqfentity: ^2.1.2
-  sqfentity_gen: ^2.1.2+1
-  # characters: ^1.0.0
+  flutter_datetime_picker: ^1.5.1
+  sqfentity: ^2.4.0
+  sqfentity_gen: ^2.3.0+4
   package_info: ^2.0.2
   share: ^2.0.4
-  rxdart: ^0.27.2
+  rxdart: ^0.27.7
   flutter_local_notifications: ^8.2.0
   flutter_native_timezone: ^2.0.0
-  device_info: ^2.0.2
+  device_info: ^2.0.3
 
 dev_dependencies:
   provider: ^5.0.0
