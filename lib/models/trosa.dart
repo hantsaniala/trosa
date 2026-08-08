@@ -26,26 +26,26 @@ class Trosa {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      DatabaseProvider.COLUMN_AMOUNT: amount,
-      DatabaseProvider.COLUMN_OWNER: owner,
-      DatabaseProvider.COLUMN_DATE: date.toIso8601String(),
-      DatabaseProvider.COLUMN_DUEDATE: dueDate.toIso8601String(),
-      DatabaseProvider.COLUMN_ISINFLOW: isInflow ? 1 : 0,
-      DatabaseProvider.COLUMN_NOTE: note,
+      DatabaseProvider.columnAmount: amount,
+      DatabaseProvider.columnOwner: owner,
+      DatabaseProvider.columnDate: date.toIso8601String(),
+      DatabaseProvider.columnDueDate: dueDate.toIso8601String(),
+      DatabaseProvider.columnIsInflow: isInflow ? 1 : 0,
+      DatabaseProvider.columnNote: note,
     };
   }
 
   factory Trosa.fromMap(Map<String, dynamic> data) {
     return Trosa(
-      id: data[DatabaseProvider.COLUMN_ID] as int?,
+      id: data[DatabaseProvider.columnId] as int?,
       amount: double.tryParse(
-              data[DatabaseProvider.COLUMN_AMOUNT]?.toString() ?? '') ??
+              data[DatabaseProvider.columnAmount]?.toString() ?? '') ??
           0,
-      owner: data[DatabaseProvider.COLUMN_OWNER]?.toString() ?? '',
-      date: _parseDate(data[DatabaseProvider.COLUMN_DATE]),
-      dueDate: _parseDate(data[DatabaseProvider.COLUMN_DUEDATE]),
-      isInflow: data[DatabaseProvider.COLUMN_ISINFLOW] == 1,
-      note: data[DatabaseProvider.COLUMN_NOTE]?.toString(),
+      owner: data[DatabaseProvider.columnOwner]?.toString() ?? '',
+      date: _parseDate(data[DatabaseProvider.columnDate]),
+      dueDate: _parseDate(data[DatabaseProvider.columnDueDate]),
+      isInflow: data[DatabaseProvider.columnIsInflow] == 1,
+      note: data[DatabaseProvider.columnNote]?.toString(),
     );
   }
 
