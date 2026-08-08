@@ -9,8 +9,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   cupertino_icons: ^1.0.9
-  intl: ^0.20.3
+  intl: ^0.20.2
   package_info_plus: ^10.2.1
   path: ^1.9.1
   provider: ^6.1.5
@@ -35,6 +37,7 @@ flutter_icons:
   image_path: "assets/icons/main_icon.png"
 
 flutter:
+  generate: true
   uses-material-design: true
   assets:
     - assets/images/

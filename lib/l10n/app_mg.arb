@@ -1,0 +1,37 @@
+{
+  "@@locale": "mg",
+  "appName": "Trosa",
+  "moneyToReceive": "Vola ho raisina",
+  "moneyToPay": "Vola mila haloa",
+  "balance": "Toe-bolanao",
+  "currencyPrefix": "Ar ",
+  "debtListTitle": "Lisitr'ireo Trosa",
+  "addDebt": "Hampiditra Trosa",
+  "editDebt": "Fanitsiana Trosa",
+  "deleteDebtTitle": "Hamafa Trosa",
+  "deleteDebtMessage": "Tena tianao ho fafana tokoa ve io trosa io ?",
+  "no": "TSIA",
+  "yes": "ENY",
+  "about": "Mombamomba",
+  "sortByDate": "Daty",
+  "sortByOwner": "Anarana",
+  "sortByAmount": "Sandany",
+  "shareAppMessage": "Ndao hampiasa an'ito {appUrl}",
+  "@shareAppMessage": {
+    "placeholders": {
+      "appUrl": {
+        "type": "String"
+      }
+    }
+  },
+  "amountLabel": "Ohatrinona",
+  "currencySuffix": "MGA",
+  "amountRequired": "Mila soratana hoe ohatrinona azafady.",
+  "ownerLabel": "Ilay olona",
+  "ownerRequired": "Mila fenoina ny anaran'ilay olona.",
+  "dueDateLabel": "Haverina ny ",
+  "noteLabel": "Fanamarihana",
+  "aboutTitle": "Mombamomba ny Trosa",
+  "aboutDescription": "Application natao handraisana naoty ireo trosa tokony haloa sy mila takiana.",
+  "poweredBy": "Powered by"
+}
