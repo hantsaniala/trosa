@@ -12,6 +12,9 @@ class Trosa {
   DateTime dueDate;
   bool isInflow;
   String? note;
+  double paidAmount;
+  String category;
+  int recurringDays;
 
   Trosa({
     this.id,
@@ -21,8 +24,29 @@ class Trosa {
     DateTime? dueDate,
     this.isInflow = true,
     this.note,
+    this.paidAmount = 0,
+    this.category = '',
+    this.recurringDays = 0,
   })  : date = date ?? DateTime.now(),
         dueDate = dueDate ?? DateTime.now();
+
+  /// Amount still owed (never negative).
+  double get remaining {
+    final diff = amount - paidAmount;
+    return diff < 0 ? 0 : diff;
+  }
+
+  bool get isPaid => remaining <= 0;
+
+  /// True when the due date is in the past and the debt is still outstanding.
+  bool get isOverdue => !isPaid && dueDate.isBefore(DateTime.now());
+
+  /// True when the debt is due within the next 7 days and still outstanding.
+  bool get isDueSoon {
+    if (isPaid) return false;
+    final now = DateTime.now();
+    return !dueDate.isBefore(now) && dueDate.isBefore(now.add(const Duration(days: 7)));
+  }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -32,6 +56,9 @@ class Trosa {
       DatabaseProvider.columnDueDate: dueDate.toIso8601String(),
       DatabaseProvider.columnIsInflow: isInflow ? 1 : 0,
       DatabaseProvider.columnNote: note,
+      DatabaseProvider.columnPaidAmount: paidAmount,
+      DatabaseProvider.columnCategory: category,
+      DatabaseProvider.columnRecurringDays: recurringDays,
     };
   }
 
@@ -46,6 +73,13 @@ class Trosa {
       dueDate: _parseDate(data[DatabaseProvider.columnDueDate]),
       isInflow: data[DatabaseProvider.columnIsInflow] == 1,
       note: data[DatabaseProvider.columnNote]?.toString(),
+      paidAmount: double.tryParse(
+              data[DatabaseProvider.columnPaidAmount]?.toString() ?? '') ??
+          0,
+      category: data[DatabaseProvider.columnCategory]?.toString() ?? '',
+      recurringDays: int.tryParse(
+              data[DatabaseProvider.columnRecurringDays]?.toString() ?? '') ??
+          0,
     );
   }
 
