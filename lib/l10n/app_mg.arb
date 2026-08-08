@@ -4,7 +4,14 @@
   "moneyToReceive": "Vola ho raisina",
   "moneyToPay": "Vola mila haloa",
   "balance": "Toe-bolanao",
-  "currencyPrefix": "Ar ",
+  "currencyPrefix": "{symbol} ",
+  "@currencyPrefix": {
+    "placeholders": {
+      "symbol": {
+        "type": "String"
+      }
+    }
+  },
   "debtListTitle": "Lisitr'ireo Trosa",
   "addDebt": "Hampiditra Trosa",
   "editDebt": "Fanitsiana Trosa",
@@ -13,6 +20,8 @@
   "no": "TSIA",
   "yes": "ENY",
   "about": "Mombamomba",
+  "stats": "Statistika",
+  "settings": "Fikirana",
   "sortByDate": "Daty",
   "sortByOwner": "Anarana",
   "sortByAmount": "Sandany",
@@ -24,14 +33,78 @@
       }
     }
   },
+  "searchHint": "Karohy (anarana, fanamarihana, sokajy)...",
+  "filterAll": "Rehetra",
+  "filterUnpaid": "Mbola tsy voaloa",
+  "filterPaid": "Efa voaloa",
+  "filterOverdue": "Lasa ny daty",
+  "paidBadge": "Voaloa",
+  "remainingLabel": "Sisa",
+  "remainingText": "Sisa {amount}",
+  "@remainingText": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "amountLabel": "Ohatrinona",
-  "currencySuffix": "MGA",
+  "currencySuffix": "{symbol}",
+  "@currencySuffix": {
+    "placeholders": {
+      "symbol": {
+        "type": "String"
+      }
+    }
+  },
   "amountRequired": "Mila soratana hoe ohatrinona azafady.",
   "ownerLabel": "Ilay olona",
   "ownerRequired": "Mila fenoina ny anaran'ilay olona.",
   "dueDateLabel": "Haverina ny ",
   "noteLabel": "Fanamarihana",
+  "paidAmountLabel": "Vola efa voaloa",
+  "categoryLabel": "Sokajy",
+  "noCategory": "Tsy misy sokajy",
+  "categoryFamily": "Fianakaviana",
+  "categoryFriends": "Namana",
+  "categoryWork": "Asa",
+  "categoryOther": "Hafa",
+  "recurringLabel": "Averimberina isaky ny andro (0 = tsy misy)",
   "aboutTitle": "Mombamomba ny Trosa",
   "aboutDescription": "Application natao handraisana naoty ireo trosa tokony haloa sy mila takiana.",
-  "poweredBy": "Powered by"
+  "poweredBy": "Powered by",
+  "deletedSnackBar": "Voafafa ny trosa",
+  "undoAction": "AVERY",
+  "settingsTitle": "Fikirana",
+  "currencyLabel": "Volan-karena",
+  "themeLabel": "Endrika",
+  "themeSystem": "Araka ny rafitra",
+  "themeLight": "Mazava",
+  "themeDark": "Maizina",
+  "backupExport": "Export CSV",
+  "backupImport": "Import CSV",
+  "backupImported": "Trosa {count} no nampidirina",
+  "@backupImported": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupFailed": "Tsy nahomby ny fanondranana",
+  "notificationBody": "Tsy maintsy haverina ny trosa ho an'i {owner}",
+  "@notificationBody": {
+    "placeholders": {
+      "owner": {
+        "type": "String"
+      }
+    }
+  },
+  "statsTitle": "Statistika",
+  "statsTotal": "Trosa rehetra",
+  "statsPaid": "Efa voaloa",
+  "statsOutstanding": "Mbola misy sisa",
+  "statsMonthly": "Vola isam-bolana",
+  "statsTopOwners": "Tompon-trosa ambony indrindra",
+  "statsEmpty": "Mbola tsy misy trosa voasoratra."
 }

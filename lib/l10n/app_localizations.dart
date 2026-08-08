@@ -121,8 +121,8 @@ abstract class AppLocalizations {
   /// No description provided for @currencyPrefix.
   ///
   /// In mg, this message translates to:
-  /// **'Ar '**
-  String get currencyPrefix;
+  /// **'{symbol} '**
+  String currencyPrefix(String symbol);
 
   /// No description provided for @debtListTitle.
   ///
@@ -172,6 +172,18 @@ abstract class AppLocalizations {
   /// **'Mombamomba'**
   String get about;
 
+  /// No description provided for @stats.
+  ///
+  /// In mg, this message translates to:
+  /// **'Statistika'**
+  String get stats;
+
+  /// No description provided for @settings.
+  ///
+  /// In mg, this message translates to:
+  /// **'Fikirana'**
+  String get settings;
+
   /// No description provided for @sortByDate.
   ///
   /// In mg, this message translates to:
@@ -196,6 +208,54 @@ abstract class AppLocalizations {
   /// **'Ndao hampiasa an\'ito {appUrl}'**
   String shareAppMessage(String appUrl);
 
+  /// No description provided for @searchHint.
+  ///
+  /// In mg, this message translates to:
+  /// **'Karohy (anarana, fanamarihana, sokajy)...'**
+  String get searchHint;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In mg, this message translates to:
+  /// **'Rehetra'**
+  String get filterAll;
+
+  /// No description provided for @filterUnpaid.
+  ///
+  /// In mg, this message translates to:
+  /// **'Mbola tsy voaloa'**
+  String get filterUnpaid;
+
+  /// No description provided for @filterPaid.
+  ///
+  /// In mg, this message translates to:
+  /// **'Efa voaloa'**
+  String get filterPaid;
+
+  /// No description provided for @filterOverdue.
+  ///
+  /// In mg, this message translates to:
+  /// **'Lasa ny daty'**
+  String get filterOverdue;
+
+  /// No description provided for @paidBadge.
+  ///
+  /// In mg, this message translates to:
+  /// **'Voaloa'**
+  String get paidBadge;
+
+  /// No description provided for @remainingLabel.
+  ///
+  /// In mg, this message translates to:
+  /// **'Sisa'**
+  String get remainingLabel;
+
+  /// No description provided for @remainingText.
+  ///
+  /// In mg, this message translates to:
+  /// **'Sisa {amount}'**
+  String remainingText(String amount);
+
   /// No description provided for @amountLabel.
   ///
   /// In mg, this message translates to:
@@ -205,8 +265,8 @@ abstract class AppLocalizations {
   /// No description provided for @currencySuffix.
   ///
   /// In mg, this message translates to:
-  /// **'MGA'**
-  String get currencySuffix;
+  /// **'{symbol}'**
+  String currencySuffix(String symbol);
 
   /// No description provided for @amountRequired.
   ///
@@ -238,6 +298,54 @@ abstract class AppLocalizations {
   /// **'Fanamarihana'**
   String get noteLabel;
 
+  /// No description provided for @paidAmountLabel.
+  ///
+  /// In mg, this message translates to:
+  /// **'Vola efa voaloa'**
+  String get paidAmountLabel;
+
+  /// No description provided for @categoryLabel.
+  ///
+  /// In mg, this message translates to:
+  /// **'Sokajy'**
+  String get categoryLabel;
+
+  /// No description provided for @noCategory.
+  ///
+  /// In mg, this message translates to:
+  /// **'Tsy misy sokajy'**
+  String get noCategory;
+
+  /// No description provided for @categoryFamily.
+  ///
+  /// In mg, this message translates to:
+  /// **'Fianakaviana'**
+  String get categoryFamily;
+
+  /// No description provided for @categoryFriends.
+  ///
+  /// In mg, this message translates to:
+  /// **'Namana'**
+  String get categoryFriends;
+
+  /// No description provided for @categoryWork.
+  ///
+  /// In mg, this message translates to:
+  /// **'Asa'**
+  String get categoryWork;
+
+  /// No description provided for @categoryOther.
+  ///
+  /// In mg, this message translates to:
+  /// **'Hafa'**
+  String get categoryOther;
+
+  /// No description provided for @recurringLabel.
+  ///
+  /// In mg, this message translates to:
+  /// **'Averimberina isaky ny andro (0 = tsy misy)'**
+  String get recurringLabel;
+
   /// No description provided for @aboutTitle.
   ///
   /// In mg, this message translates to:
@@ -255,6 +363,126 @@ abstract class AppLocalizations {
   /// In mg, this message translates to:
   /// **'Powered by'**
   String get poweredBy;
+
+  /// No description provided for @deletedSnackBar.
+  ///
+  /// In mg, this message translates to:
+  /// **'Voafafa ny trosa'**
+  String get deletedSnackBar;
+
+  /// No description provided for @undoAction.
+  ///
+  /// In mg, this message translates to:
+  /// **'AVERY'**
+  String get undoAction;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In mg, this message translates to:
+  /// **'Fikirana'**
+  String get settingsTitle;
+
+  /// No description provided for @currencyLabel.
+  ///
+  /// In mg, this message translates to:
+  /// **'Volan-karena'**
+  String get currencyLabel;
+
+  /// No description provided for @themeLabel.
+  ///
+  /// In mg, this message translates to:
+  /// **'Endrika'**
+  String get themeLabel;
+
+  /// No description provided for @themeSystem.
+  ///
+  /// In mg, this message translates to:
+  /// **'Araka ny rafitra'**
+  String get themeSystem;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In mg, this message translates to:
+  /// **'Mazava'**
+  String get themeLight;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In mg, this message translates to:
+  /// **'Maizina'**
+  String get themeDark;
+
+  /// No description provided for @backupExport.
+  ///
+  /// In mg, this message translates to:
+  /// **'Export CSV'**
+  String get backupExport;
+
+  /// No description provided for @backupImport.
+  ///
+  /// In mg, this message translates to:
+  /// **'Import CSV'**
+  String get backupImport;
+
+  /// No description provided for @backupImported.
+  ///
+  /// In mg, this message translates to:
+  /// **'Trosa {count} no nampidirina'**
+  String backupImported(int count);
+
+  /// No description provided for @backupFailed.
+  ///
+  /// In mg, this message translates to:
+  /// **'Tsy nahomby ny fanondranana'**
+  String get backupFailed;
+
+  /// No description provided for @notificationBody.
+  ///
+  /// In mg, this message translates to:
+  /// **'Tsy maintsy haverina ny trosa ho an\'i {owner}'**
+  String notificationBody(String owner);
+
+  /// No description provided for @statsTitle.
+  ///
+  /// In mg, this message translates to:
+  /// **'Statistika'**
+  String get statsTitle;
+
+  /// No description provided for @statsTotal.
+  ///
+  /// In mg, this message translates to:
+  /// **'Trosa rehetra'**
+  String get statsTotal;
+
+  /// No description provided for @statsPaid.
+  ///
+  /// In mg, this message translates to:
+  /// **'Efa voaloa'**
+  String get statsPaid;
+
+  /// No description provided for @statsOutstanding.
+  ///
+  /// In mg, this message translates to:
+  /// **'Mbola misy sisa'**
+  String get statsOutstanding;
+
+  /// No description provided for @statsMonthly.
+  ///
+  /// In mg, this message translates to:
+  /// **'Vola isam-bolana'**
+  String get statsMonthly;
+
+  /// No description provided for @statsTopOwners.
+  ///
+  /// In mg, this message translates to:
+  /// **'Tompon-trosa ambony indrindra'**
+  String get statsTopOwners;
+
+  /// No description provided for @statsEmpty.
+  ///
+  /// In mg, this message translates to:
+  /// **'Mbola tsy misy trosa voasoratra.'**
+  String get statsEmpty;
 }
 
 class _AppLocalizationsDelegate
