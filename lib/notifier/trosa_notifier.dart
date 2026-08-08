@@ -73,4 +73,11 @@ class TrosaNotifier extends ChangeNotifier {
     _trosaList.remove(trosa);
     notifyListeners();
   }
+
+  /// Removes a record from the currently displayed list (used right after a
+  /// Dismissible animation so the widget leaves the tree).
+  void removeCurrent(Trosa trosa) {
+    _currentTrosaList.remove(trosa);
+    notifyListeners();
+  }
 }
