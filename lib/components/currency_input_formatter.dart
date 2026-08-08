@@ -1,25 +1,25 @@
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
-// TODO : Check if currency formatter work
-// Source : https://stackoverflow.com/a/50530099/5527968
+/// Formats a digits-only input as a thousands-separated number.
+///
+/// Falls back to the unformatted input whenever the text cannot be parsed
+/// (e.g. pasted or partially edited values) instead of throwing.
 class CurrencyInputFormatter extends TextInputFormatter {
+  final NumberFormat _formatter = NumberFormat('###,###', 'fr_FR');
+
+  @override
   TextEditingValue formatEditUpdate(
       TextEditingValue oldValue, TextEditingValue newValue) {
-    if (newValue.selection.baseOffset == 0) {
-      print(true);
+    final value = double.tryParse(newValue.text);
+    if (value == null) {
       return newValue;
     }
 
-    double value = double.parse(newValue.text);
-
-    //final formatter = NumberFormat.simpleCurrency(locale: "fr_FR");
-    final formatter = new NumberFormat('###,###', 'fr_FR');
-
-    String newText = formatter.format(value);
-
+    final newText = _formatter.format(value);
     return newValue.copyWith(
-        text: newText,
-        selection: new TextSelection.collapsed(offset: newText.length));
+      text: newText,
+      selection: TextSelection.collapsed(offset: newText.length),
+    );
   }
 }
