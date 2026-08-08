@@ -1,21 +1,15 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class TrosaAboutPage extends StatefulWidget {
-  TrosaAboutPage({Key? key}) : super(key: key);
+  const TrosaAboutPage({super.key});
 
   @override
-  _TrosaAboutPageState createState() => _TrosaAboutPageState();
+  State<TrosaAboutPage> createState() => _TrosaAboutPageState();
 }
 
 class _TrosaAboutPageState extends State<TrosaAboutPage> {
-  PackageInfo _packageInfo = PackageInfo(
-    appName: 'Unknown',
-    packageName: 'Unknown',
-    version: 'Unknown',
-    buildNumber: 'Unknown',
-  );
+  PackageInfo? _packageInfo;
 
   @override
   void initState() {
@@ -24,18 +18,25 @@ class _TrosaAboutPageState extends State<TrosaAboutPage> {
   }
 
   Future<void> _initPackageInfo() async {
-    final PackageInfo info = await PackageInfo.fromPlatform();
-    setState(() {
-      _packageInfo = info;
-    });
+    final info = await PackageInfo.fromPlatform();
+    if (mounted) {
+      setState(() {
+        _packageInfo = info;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
+    final size = MediaQuery.of(context).size;
+    final info = _packageInfo;
+    final version = info != null
+        ? '${info.version}.${info.buildNumber}'
+        : '';
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Mombamomba ny Trosa'),
+        title: const Text('Mombamomba ny Trosa'),
       ),
       body: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20),
@@ -50,7 +51,7 @@ class _TrosaAboutPageState extends State<TrosaAboutPage> {
               children: <Widget>[
                 Text(
                   'Trosa',
-                  style: Theme.of(context).textTheme.headline4,
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 SizedBox(
                   width: size.width * .02,
@@ -58,8 +59,8 @@ class _TrosaAboutPageState extends State<TrosaAboutPage> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: Text(
-                    _packageInfo.version + '.' + _packageInfo.buildNumber,
-                    style: Theme.of(context).textTheme.subtitle1,
+                    version,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
               ],
@@ -68,15 +69,16 @@ class _TrosaAboutPageState extends State<TrosaAboutPage> {
               height: size.height * .02,
             ),
             Text(
-                "Application natao handraisana naoty ireo trosa tokony haloa sy mila takiana.",
-                style: Theme.of(context).textTheme.subtitle1),
+              'Application natao handraisana naoty ireo trosa tokony haloa sy mila takiana.',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             SizedBox(
               height: size.height * .05,
             ),
             Center(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
+                children: const <Widget>[
                   Text('Powered by'),
                   FlutterLogo(),
                 ],

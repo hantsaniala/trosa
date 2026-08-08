@@ -1,31 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:Trosa/const.dart';
-import 'package:Trosa/notifier/trosa_notifier.dart';
-import 'package:Trosa/screens/trosa/trosa_screen.dart';
 import 'package:provider/provider.dart';
-
-// BUG : Display lag on GT-i9500
-// BUG : App stuck on fullscreen
-
-// TODO : Update splash screen
-
-// FEATURE : Notification reminder for due date
-// FEATURE : Widget for descktop (resume and add)
+import 'package:trosa/const.dart';
+import 'package:trosa/notifier/trosa_notifier.dart';
+import 'package:trosa/screens/trosa/trosa_screen.dart';
 
 void main() {
-  runApp(
-    MultiProvider(
+  runApp(const TrosaApp());
+}
+
+class TrosaApp extends StatelessWidget {
+  const TrosaApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
       providers: [
         ChangeNotifierProvider(
           create: (context) => TrosaNotifier(),
         )
       ],
-      child: Trosa(),
-    ),
-  );
+      child: const Trosa(),
+    );
+  }
 }
 
 class Trosa extends StatelessWidget {
+  const Trosa({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -34,7 +35,7 @@ class Trosa extends StatelessWidget {
         primarySwatch: KPrimaryColor,
       ),
       debugShowCheckedModeBanner: false,
-      home: TrosaPage(),
+      home: const TrosaPage(),
     );
   }
 }
