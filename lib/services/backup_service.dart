@@ -47,15 +47,11 @@ class BackupService {
   /// Lets the user pick a CSV file and imports every row.
   /// Returns the number of imported debts.
   static Future<int> importCsv() async {
-    final result = await FilePicker.pickFiles(
+    final file = await FilePicker.pickFile(
       type: FileType.custom,
       allowedExtensions: ['csv'],
-      allowMultiple: false,
     );
-    if (result == null || result.files.isEmpty) {
-      return 0;
-    }
-    final path = result.files.single.path;
+    final path = file?.path;
     if (path == null) {
       return 0;
     }
