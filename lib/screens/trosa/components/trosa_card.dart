@@ -1,24 +1,22 @@
 import 'package:flutter/material.dart';
 
 class TrosaCard extends StatelessWidget {
-  final bool? isInflow;
-  final String? amount;
-  final String? owner;
-  final String? dueDate;
-  final String? date;
-  final String? note;
-  final List? data;
+  final bool isInflow;
+  final String amount;
+  final String owner;
+  final String dueDate;
+  final String date;
+  final String note;
 
   const TrosaCard({
-    Key? key,
-    this.data,
-    this.amount,
-    this.owner,
-    this.dueDate,
-    this.date,
-    this.isInflow,
-    this.note,
-  }) : super(key: key);
+    super.key,
+    required this.isInflow,
+    required this.amount,
+    required this.owner,
+    required this.dueDate,
+    required this.date,
+    this.note = '',
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +24,8 @@ class TrosaCard extends StatelessWidget {
       child: ListTile(
         dense: true,
         leading: Icon(
-          isInflow ?? true ? Icons.add : Icons.remove,
-          color: isInflow ?? true ? Colors.green : Colors.red,
+          isInflow ? Icons.add : Icons.remove,
+          color: isInflow ? Colors.green : Colors.red,
           size: 35,
         ),
         title: SizedBox(
@@ -39,19 +37,21 @@ class TrosaCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
                 Text(
-                  'Ar ' + amount.toString(),
-                  style: TextStyle(fontSize: 18),
+                  'Ar $amount',
+                  style: const TextStyle(fontSize: 18),
                 ),
-                Text(owner ?? "",
-                    style: Theme.of(context).textTheme.bodyText1,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1),
+                Text(
+                  owner,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
               ],
             ),
           ),
         ),
         subtitle: Text(
-          note ?? "",
+          note,
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
         ),
@@ -64,13 +64,10 @@ class TrosaCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Icon(
-                    Icons.calendar_today,
-                    size: 12,
-                  ),
+                  const Icon(Icons.calendar_today, size: 12),
                   Text(
-                    " " + dueDate.toString(),
-                    style: TextStyle(fontSize: 13),
+                    ' $dueDate',
+                    style: const TextStyle(fontSize: 13),
                   ),
                 ],
               ),
@@ -81,13 +78,11 @@ class TrosaCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Icon(
-                    Icons.drive_file_rename_outline,
-                    size: 12,
-                  ),
+                  const Icon(Icons.drive_file_rename_outline, size: 12),
                   Text(
-                    " " + date.toString(),
-                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w400),
+                    ' $date',
+                    style: const TextStyle(
+                        fontSize: 11, fontWeight: FontWeight.w400),
                   ),
                 ],
               ),

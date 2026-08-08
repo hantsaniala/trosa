@@ -1,136 +1,161 @@
-import 'package:Trosa/screens/trosa/trosa_about.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import 'package:Trosa/api/trosa_api.dart';
-import 'package:Trosa/db/sqflite_provider.dart';
-import 'package:Trosa/notifier/trosa_notifier.dart';
-import 'package:Trosa/screens/trosa/trosa_form_screen.dart';
-import 'package:Trosa/screens/trosa/components/trosa_card.dart';
 import 'package:provider/provider.dart';
-import 'package:share/share.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:trosa/api/trosa_api.dart';
+import 'package:trosa/db/sqflite_provider.dart';
+import 'package:trosa/models/trosa.dart';
+import 'package:trosa/notifier/trosa_notifier.dart';
+import 'package:trosa/screens/trosa/components/trosa_card.dart';
+import 'package:trosa/screens/trosa/trosa_about.dart';
+import 'package:trosa/screens/trosa/trosa_form_screen.dart';
 
 class TrosaPage extends StatefulWidget {
-  const TrosaPage({Key key = const Key('trosa_key')}) : super(key: key);
+  const TrosaPage({super.key});
 
   @override
-  _TrosaPageState createState() => _TrosaPageState();
+  State<TrosaPage> createState() => _TrosaPageState();
 }
 
 class _TrosaPageState extends State<TrosaPage> {
-  void _gotoAddPage() {
-    Navigator.push(
-      context,
-      new MaterialPageRoute(builder: (context) => new TrosaAddPage()),
-    );
-  }
+  final NumberFormat _formatter = NumberFormat('###,###', 'fr');
+  static const String _appUrl = 'https://apkpure.com/p/mg.hantsaniala.trosa';
 
   @override
   void initState() {
-    TrosaNotifier trosaNotifier =
-        Provider.of<TrosaNotifier>(context, listen: false);
-    getTrosa(trosaNotifier);
-    initializeDateFormatting('fr_FR');
     super.initState();
+    initializeDateFormatting('fr_FR');
+    final trosaNotifier = Provider.of<TrosaNotifier>(context, listen: false);
+    getTrosa(trosaNotifier);
+  }
+
+  Future<void> _refreshList(TrosaNotifier notifier) async {
+    await getTrosa(notifier);
+  }
+
+  void _gotoAddPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute<void>(builder: (context) => const TrosaAddPage()),
+    );
+  }
+
+  Future<void> _shareApp() async {
+    final box = context.findRenderObject() as RenderBox?;
+    await SharePlus.instance.share(
+      ShareParams(
+        text: "Ndao hampiasa an'ito $_appUrl",
+        sharePositionOrigin:
+            box != null ? box.localToGlobal(Offset.zero) & box.size : null,
+      ),
+    );
+  }
+
+  Future<bool> _confirmDeleteTrosa() async {
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Hamafa Trosa'),
+          content: const Text('Tena tianao ho fafana tokoa ve io trosa io ?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('TSIA'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text(
+                'ENY',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+    return result ?? false;
+  }
+
+  Future<void> _deleteTrosa(TrosaNotifier notifier, Trosa trosa) async {
+    // Remove the item synchronously so the dismissed widget leaves the tree,
+    // then persist and refresh the totals.
+    notifier.deleteTrosa(trosa);
+    await DatabaseProvider.db.delete(trosa);
+    await getTrosa(notifier);
+  }
+
+  void _chooseMenuAction(TrosaNotifier notifier, String choice) {
+    if (choice == Constants.About) {
+      Navigator.push(
+        context,
+        MaterialPageRoute<void>(builder: (context) => const TrosaAboutPage()),
+      );
+    } else if (choice == Constants.SortByAmount) {
+      setState(() {
+        notifier.sortType = 'amount';
+        _applySort(notifier);
+      });
+    } else if (choice == Constants.SortByDate) {
+      setState(() {
+        notifier.sortType = 'date';
+        _applySort(notifier);
+      });
+    } else if (choice == Constants.SortByOwner) {
+      setState(() {
+        notifier.sortType = 'owner';
+        _applySort(notifier);
+      });
+    }
+  }
+
+  void _toggleSortDirection(TrosaNotifier notifier) {
+    setState(() {
+      notifier.sortAscend = !notifier.sortAscend;
+      _applySort(notifier);
+    });
+  }
+
+  void _applySort(TrosaNotifier notifier) {
+    final list = notifier.currentTrosaList;
+    switch (notifier.sortType) {
+      case 'amount':
+        list.sort((a, b) => notifier.sortAscend
+            ? a.amount.compareTo(b.amount)
+            : b.amount.compareTo(a.amount));
+        break;
+      case 'owner':
+        list.sort((a, b) => notifier.sortAscend
+            ? a.owner.toLowerCase().compareTo(b.owner.toLowerCase())
+            : b.owner.toLowerCase().compareTo(a.owner.toLowerCase()));
+        break;
+      default:
+        list.sort((a, b) => notifier.sortAscend
+            ? a.date.compareTo(b.date)
+            : b.date.compareTo(a.date));
+        break;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    TrosaNotifier trosaNotifier = Provider.of<TrosaNotifier>(context);
-    var size = MediaQuery.of(context).size;
-
-    final formatter = new NumberFormat('###,###', 'fr');
-    Future<void> _refreshList() async {
-      print('Refreshing the Trosa list');
-      getTrosa(trosaNotifier);
-    }
-
-    /* final RenderBox box = context.findRenderObject(); */
-    // TODO : Update file on drive
-    final String appURL = 'https://apkpure.com/p/mg.hantsaniala.trosa';
-
-    Future<bool> _confirmDeleteTrosa() async {
-      return await showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("Hamafa Trosa"),
-            content: Text("Tena tianao ho fafana tokoa ve io trosa io ?"),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('TSIA'),
-                onPressed: () {
-                  Navigator.pop(context, false);
-                },
-              ),
-              FlatButton(
-                child: Text(
-                  'ENY',
-                  style: TextStyle(color: Colors.red),
-                ),
-                onPressed: () {
-                  Navigator.pop(context, true);
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
-
-    // TODO : Save filter type
-    void choiceAction(String choice) {
-      if (choice == Constants.About) {
-        Navigator.push(
-          context,
-          new MaterialPageRoute(builder: (context) => new TrosaAboutPage()),
-        );
-      } else if (choice == Constants.SortByAmount) {
-        setState(() {
-          trosaNotifier.sortType = 'amount';
-          trosaNotifier.currentTrosaList.sort((a, b) => trosaNotifier.sortAscend
-              ? a!.amount!.compareTo(b!.amount!)
-              : b!.amount!.compareTo(a!.amount!));
-        });
-      } else if (choice == Constants.SortByDate) {
-        setState(() {
-          trosaNotifier.sortType = 'date';
-          trosaNotifier.currentTrosaList.sort((a, b) => trosaNotifier.sortAscend
-              ? a!.date!.compareTo(b!.date!)
-              : b!.date!.compareTo(a!.date!));
-        });
-      } else if (choice == Constants.SortByOwner) {
-        setState(() {
-          trosaNotifier.sortType = 'owner';
-          trosaNotifier.currentTrosaList.sort((a, b) => trosaNotifier.sortAscend
-              ? a!.owner!.compareTo(b!.owner!)
-              : b!.owner!.compareTo(a!.owner!));
-        });
-      }
-    }
+    final trosaNotifier = Provider.of<TrosaNotifier>(context);
+    final size = MediaQuery.of(context).size;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Trosa"),
+        title: const Text('Trosa'),
         actions: <Widget>[
-          // TODO : Share the app and note the app on store
-          /* IconButton(icon: Icon(Icons.favorite), onPressed: () {}), */
           IconButton(
-              icon: Icon(Icons.share),
-              onPressed: () {
-                Share.share(
-                  "Ndao hampiasa an'ito $appURL",
-                  /*subject: 'Ndao hampiasa',
-                   sharePositionOrigin:
-                        box.localToGlobal(Offset.zero) & box.size */
-                );
-              }),
-          // TODO : Use menu item instead of direct page
+            icon: const Icon(Icons.share),
+            onPressed: _shareApp,
+          ),
           PopupMenuButton<String>(
-            icon: Icon(Icons.more_vert),
-            onSelected: choiceAction,
-            itemBuilder: (BuildContext context) {
+            icon: const Icon(Icons.more_vert),
+            onSelected: (choice) => _chooseMenuAction(trosaNotifier, choice),
+            itemBuilder: (context) {
               return Constants.menuChoices.map((String choice) {
                 return PopupMenuItem<String>(
                   value: choice,
@@ -142,7 +167,7 @@ class _TrosaPageState extends State<TrosaPage> {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: _refreshList,
+        onRefresh: () => _refreshList(trosaNotifier),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -153,7 +178,7 @@ class _TrosaPageState extends State<TrosaPage> {
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
                     children: <Widget>[
-                      Row(
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text('Vola ho raisina'),
@@ -164,18 +189,14 @@ class _TrosaPageState extends State<TrosaPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Text(
-                            'Ar ' +
-                                formatter
-                                    .format(trosaNotifier.totalInflow ?? 0.0)
-                                    .toString(),
-                            style: TextStyle(fontSize: 20, color: Colors.green),
+                            'Ar ${_formatter.format(trosaNotifier.totalInflow)}',
+                            style: const TextStyle(
+                                fontSize: 20, color: Colors.green),
                           ),
                           Text(
-                            'Ar ' +
-                                formatter
-                                    .format(trosaNotifier.totalOutflow ?? 0.0)
-                                    .toString(),
-                            style: TextStyle(fontSize: 20, color: Colors.red),
+                            'Ar ${_formatter.format(trosaNotifier.totalOutflow)}',
+                            style: const TextStyle(
+                                fontSize: 20, color: Colors.red),
                           ),
                         ],
                       ),
@@ -188,19 +209,17 @@ class _TrosaPageState extends State<TrosaPage> {
                         children: <Widget>[
                           Text(
                             'Toe-bolanao',
-                            style: Theme.of(context).textTheme.headline6,
+                            style: Theme.of(context).textTheme.titleLarge,
                           ),
                           Text(
-                            'Ar ' +
-                                formatter
-                                    .format(trosaNotifier.balance ?? 0.0)
-                                    .toString(),
+                            'Ar ${_formatter.format(trosaNotifier.balance)}',
                             style: TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.w300,
-                                color: (trosaNotifier.balance! <= 0)
-                                    ? Colors.red
-                                    : Colors.green),
+                              fontSize: 30,
+                              fontWeight: FontWeight.w300,
+                              color: (trosaNotifier.balance <= 0)
+                                  ? Colors.red
+                                  : Colors.green,
+                            ),
                           ),
                         ],
                       ),
@@ -215,63 +234,20 @@ class _TrosaPageState extends State<TrosaPage> {
                 children: [
                   Text(
                     "Lisitr'ireo Trosa",
-                    style: Theme.of(context).textTheme.headline6,
+                    style: Theme.of(context).textTheme.titleLarge,
                   ),
-                  Spacer(),
-                  /* Expanded(
-                    child: TextField(
-                      // TODO : UI Animation expand en touch
-                      decoration: InputDecoration(
-                        fillColor: Colors.yellowAccent,
-                        contentPadding: EdgeInsets.only(left: 15),
-                        border: OutlineInputBorder(
-                            /* borderRadius: BorderRadius.circular(5), */
-                            ),
-                        suffixIcon: IconButton(
-                            icon: Icon(Icons.search), onPressed: () {}),
-                      ),
-                      // TODO : Filter Trosa list dynamicaly based on text value change
-                      onChanged: (value) {},
-                    ),
-                  ), */
-
+                  const Spacer(),
                   IconButton(
-                      icon: Icon(trosaNotifier.sortAscend
-                          ? Icons.arrow_downward
-                          : Icons.arrow_upward),
-                      onPressed: () {
-                        print(trosaNotifier.sortType);
-                        setState(() {
-                          switch (trosaNotifier.sortType) {
-                            case 'date':
-                              trosaNotifier.currentTrosaList.sort((a, b) =>
-                                  trosaNotifier.sortAscend
-                                      ? a!.date!.compareTo(b!.date!)
-                                      : b!.date!.compareTo(a!.date!));
-                              break;
-                            case 'amount':
-                              trosaNotifier.currentTrosaList.sort((a, b) =>
-                                  trosaNotifier.sortAscend
-                                      ? a!.amount!.compareTo(b!.amount!)
-                                      : b!.amount!.compareTo(a!.amount!));
-                              break;
-                            case 'owner':
-                              trosaNotifier.currentTrosaList.sort((a, b) =>
-                                  trosaNotifier.sortAscend
-                                      ? a!.owner!.compareTo(b!.owner!)
-                                      : b!.owner!.compareTo(a!.owner!));
-                              break;
-                          }
-                          trosaNotifier.sortAscend = !trosaNotifier.sortAscend;
-
-                          // TODO : Sort without calling the drop down
-                        });
-                      }),
-                  // TODO : Sort Trosa list (only search result if exist) by name, amount, dueDate, type, date
+                    icon: Icon(trosaNotifier.sortAscend
+                        ? Icons.arrow_downward
+                        : Icons.arrow_upward),
+                    onPressed: () => _toggleSortDirection(trosaNotifier),
+                  ),
                   PopupMenuButton<String>(
-                    icon: Icon(Icons.sort),
-                    onSelected: choiceAction,
-                    itemBuilder: (BuildContext context) {
+                    icon: const Icon(Icons.sort),
+                    onSelected: (choice) =>
+                        _chooseMenuAction(trosaNotifier, choice),
+                    itemBuilder: (context) {
                       return Constants.sortChoices.map((String choice) {
                         return PopupMenuItem<String>(
                           value: choice,
@@ -290,55 +266,37 @@ class _TrosaPageState extends State<TrosaPage> {
                   shrinkWrap: true,
                   itemCount: trosaNotifier.currentTrosaList.length,
                   itemExtent: 77,
-                  itemBuilder: (BuildContext context, int index) {
+                  itemBuilder: (context, index) {
+                    final trosa = trosaNotifier.currentTrosaList[index];
                     return Dismissible(
-                      onDismissed: (dismissDirection) => {},
-                      confirmDismiss: (direction) async {
-                        bool confirmDelete = await _confirmDeleteTrosa();
-                        if (confirmDelete) {
-                          DatabaseProvider.db
-                              .delete(trosaNotifier.currentTrosaList[index]);
-                          getTrosa(trosaNotifier);
-                          trosaNotifier.deleteTrosa(
-                              trosaNotifier.currentTrosaList[index]);
-                        }
-                      },
+                      key: ValueKey<Object>(trosa.id ?? index),
+                      direction: DismissDirection.endToStart,
+                      confirmDismiss: (_) => _confirmDeleteTrosa(),
+                      onDismissed: (_) => _deleteTrosa(trosaNotifier, trosa),
                       background: Container(
-                        child: Icon(
+                        color: Colors.red[700],
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 20),
+                        child: const Icon(
                           Icons.delete_forever,
                           color: Colors.white,
                         ),
-                        decoration: BoxDecoration(color: Colors.red[700]),
                       ),
-                      key: ValueKey(index),
                       child: GestureDetector(
                         onTap: () {
-                          trosaNotifier.currentTrosa =
-                              trosaNotifier.currentTrosaList[index]!;
+                          trosaNotifier.currentTrosa = trosa;
                           _gotoAddPage();
                         },
                         child: Padding(
                           padding: const EdgeInsets.only(
                               left: 5, right: 5, top: 2, bottom: 0),
                           child: TrosaCard(
-                            key: ValueKey(index),
-                            isInflow:
-                                trosaNotifier.currentTrosaList[index]!.isInflow,
-                            amount: formatter
-                                .format(trosaNotifier
-                                    .currentTrosaList[index]?.amount)
-                                .toString(),
-                            owner: trosaNotifier.currentTrosaList[index]!.owner,
-                            dueDate: DateFormat('d/M/y').format(trosaNotifier
-                                .currentTrosaList[index]!.dueDate
-                                .toDate()),
-                            date: DateFormat('d/M/y').format(trosaNotifier
-                                .currentTrosaList[index]!.date!
-                                .toDate()),
-                            note: trosaNotifier.currentTrosaList[index]!.note !=
-                                    null
-                                ? trosaNotifier.currentTrosaList[index]!.note
-                                : '',
+                            isInflow: trosa.isInflow,
+                            amount: _formatter.format(trosa.amount).toString(),
+                            owner: trosa.owner,
+                            dueDate: DateFormat('d/M/y').format(trosa.dueDate),
+                            date: DateFormat('d/M/y').format(trosa.date),
+                            note: trosa.note ?? '',
                           ),
                         ),
                       ),
@@ -356,7 +314,7 @@ class _TrosaPageState extends State<TrosaPage> {
           _gotoAddPage();
         },
         tooltip: 'Hampiditra Trosa',
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
