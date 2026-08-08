@@ -1,12 +1,9 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:sqflite/sqlite_api.dart';
-import 'package:Trosa/models/trosa.dart';
-import 'package:sqflite_migration/sqflite_migration.dart';
-import 'dart:async';
+import 'package:trosa/models/trosa.dart';
 
 class DatabaseProvider {
-  static const String TABLE_TROSA = "trosa";
+  static const String TABLE_TROSA = 'trosa';
   static const String COLUMN_ID = 'id';
   static const String COLUMN_OWNER = 'owner';
   static const String COLUMN_AMOUNT = 'amount';
@@ -15,110 +12,87 @@ class DatabaseProvider {
   static const String COLUMN_DUEDATE = 'dueDate';
   static const String COLUMN_NOTE = 'note';
 
+  static const int _databaseVersion = 2;
+
+  static const String _createTableSql = '''
+CREATE TABLE $TABLE_TROSA (
+  $COLUMN_ID INTEGER PRIMARY KEY,
+  $COLUMN_AMOUNT TEXT,
+  $COLUMN_OWNER TEXT,
+  $COLUMN_DATE TEXT,
+  $COLUMN_DUEDATE TEXT,
+  $COLUMN_ISINFLOW INTEGER
+)''';
+
+  static const String _addNoteColumnSql =
+      'ALTER TABLE $TABLE_TROSA ADD COLUMN $COLUMN_NOTE TEXT';
+
   DatabaseProvider._();
   static final DatabaseProvider db = DatabaseProvider._();
 
   Database? _database;
-  String? path;
 
-  static final initScript = [
-    '''CREATE TABLE $TABLE_TROSA (
-          $COLUMN_ID INTEGER PRIMARY KEY,
-          $COLUMN_AMOUNT TEXT,
-          $COLUMN_OWNER TEXT,
-          $COLUMN_DATE TEXT,
-          $COLUMN_DUEDATE TEXT,
-          $COLUMN_ISINFLOW INTEGER
-          )''',
-  ];
-
-  static final migrations = [
-    '''ALTER TABLE $TABLE_TROSA ADD $COLUMN_NOTE TEXT''',
-  ];
-
-  final config = MigrationConfig(
-      initializationScript: initScript, migrationScripts: migrations);
-
-  Future<Database?> get database async {
+  Future<Database> get database async {
     if (_database != null) {
-      return _database;
+      return _database!;
     }
 
-    _database = await openDatabase();
-    return _database;
-  }
-
-  Future<Database?> openDatabase() async {
-    String dbPath = await getDatabasesPath();
+    final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'trosa.db');
 
-    return await openDatabaseWithMigration(path, config);
+    _database = await openDatabase(
+      path,
+      version: _databaseVersion,
+      onCreate: (db, version) async {
+        await db.execute(_createTableSql);
+      },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await db.execute(_addNoteColumnSql);
+        }
+      },
+    );
+    return _database!;
   }
 
-  Future<List<Trosa?>> getTrosa() async {
-    print('Get Trosa list from DB');
+  Future<List<Trosa>> getTrosa() async {
     final db = await database;
-
-    var trosa = await db?.query(TABLE_TROSA, columns: [
-      COLUMN_ID,
-      COLUMN_AMOUNT,
-      COLUMN_OWNER,
-      COLUMN_DATE,
-      COLUMN_DUEDATE,
-      COLUMN_ISINFLOW,
-      COLUMN_NOTE
-    ]);
-
-    List<Trosa> trosaList = [];
-
-    trosa?.forEach((currentTrosa) {
-      Trosa trosa = Trosa.fromMap(currentTrosa);
-
-      trosaList.add(trosa);
-    });
-
-    return trosaList;
+    final rows = await db.query(TABLE_TROSA);
+    return rows.map(Trosa.fromMap).toList();
   }
 
-  Future<Trosa?> insert(Trosa? trosa) async {
-    print('Inserting a new Trosa to the DB');
+  Future<Trosa> insert(Trosa trosa) async {
     final db = await database;
-    await db?.insert(TABLE_TROSA, trosa!.toMap());
+    final id = await db.insert(TABLE_TROSA, trosa.toMap());
+    trosa.id = id;
     return trosa;
   }
 
-  Future<int?> delete(Trosa? trosa) async {
-    print('Deleting a Trosa from the DB');
+  Future<int> delete(Trosa trosa) async {
     final db = await database;
-
-    return await db?.delete(
-      TABLE_TROSA,
-      where: 'id = ?',
-      whereArgs: [trosa?.id],
-    );
+    return db.delete(TABLE_TROSA,
+        where: '$COLUMN_ID = ?', whereArgs: [trosa.id]);
   }
 
-  Future<int?> update(Trosa? trosa) async {
-    print('Updating an existing Trosa from the DB');
+  Future<int> update(Trosa trosa) async {
     final db = await database;
-
-    return await db?.update(TABLE_TROSA, trosa!.toMap(),
-        where: 'id = ?', whereArgs: [trosa.id]);
+    return db.update(TABLE_TROSA, trosa.toMap(),
+        where: '$COLUMN_ID = ?', whereArgs: [trosa.id]);
   }
 
-  Future totalInflow() async {
-    print('Getting the inflow total');
+  Future<double> totalInflow() async {
     final db = await database;
-    var res = await db?.rawQuery(
-        'SELECT SUM(amount) as totalInflow from Trosa WHERE isInflow="1"');
-    return res![0]['totalInflow'] != null ? res[0]['totalInflow'] : 0.0;
+    final result = await db.rawQuery(
+        'SELECT SUM($COLUMN_AMOUNT) as total FROM $TABLE_TROSA WHERE $COLUMN_ISINFLOW = 1');
+    final value = result.first['total'];
+    return value is num ? value.toDouble() : 0.0;
   }
 
-  Future totalOutflow() async {
-    print('Getting the outflow total');
+  Future<double> totalOutflow() async {
     final db = await database;
-    var res = await db?.rawQuery(
-        'SELECT SUM(amount) as totalOutflow from Trosa WHERE isInflow="0"');
-    return res![0]['totalOutflow'] != null ? res[0]['totalOutflow'] : 0.0;
+    final result = await db.rawQuery(
+        'SELECT SUM($COLUMN_AMOUNT) as total FROM $TABLE_TROSA WHERE $COLUMN_ISINFLOW = 0');
+    final value = result.first['total'];
+    return value is num ? value.toDouble() : 0.0;
   }
 }
