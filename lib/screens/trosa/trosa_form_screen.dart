@@ -7,6 +7,7 @@ import 'package:trosa/components/currency_input_formatter.dart';
 import 'package:trosa/db/sqflite_provider.dart';
 import 'package:trosa/l10n/app_localizations.dart';
 import 'package:trosa/models/trosa.dart';
+import 'package:trosa/notifier/settings_notifier.dart';
 import 'package:trosa/notifier/trosa_notifier.dart';
 
 class TrosaAddPage extends StatefulWidget {
@@ -19,7 +20,18 @@ class TrosaAddPage extends StatefulWidget {
 class _TrosaAddPageState extends State<TrosaAddPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final NumberFormat _formatter = NumberFormat('###,###', 'fr_FR');
+  // Reused by both money fields; avoids re-allocating a NumberFormat (inside
+  // CurrencyInputFormatter) on every rebuild.
+  final CurrencyInputFormatter _currencyFormatter = CurrencyInputFormatter();
   Trosa? _currentTrosa;
+
+  static const List<String> _categories = [
+    '',
+    'Fianakaviana',
+    'Namana',
+    'Asa',
+    'Hafa',
+  ];
 
   @override
   void initState() {
@@ -30,6 +42,21 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
       _currentTrosa = trosaNotifier.currentTrosa;
     } else {
       _currentTrosa = Trosa(isInflow: true);
+    }
+  }
+
+  String _categoryLabel(AppLocalizations l10n, String category) {
+    switch (category) {
+      case 'Fianakaviana':
+        return l10n.categoryFamily;
+      case 'Namana':
+        return l10n.categoryFriends;
+      case 'Asa':
+        return l10n.categoryWork;
+      case 'Hafa':
+        return l10n.categoryOther;
+      default:
+        return l10n.noCategory;
     }
   }
 
@@ -79,8 +106,10 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final settings = Provider.of<SettingsNotifier>(context);
     final trosa = _currentTrosa!;
     final isNew = trosa.id == null;
+    final symbol = settings.currencySymbol;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -112,7 +141,7 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                   child: TextFormField(
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
-                      CurrencyInputFormatter(),
+                      _currencyFormatter,
                     ],
                     initialValue: trosa.amount > 0
                         ? _formatter.format(trosa.amount)
@@ -122,7 +151,7 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
                       labelText: l10n.amountLabel,
-                      suffixText: l10n.currencySuffix,
+                      suffixText: l10n.currencySuffix(symbol),
                       suffixIcon: IconButton(
                         icon: Icon(
                           trosa.isInflow ? Icons.add : Icons.remove,
@@ -166,6 +195,71 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                       return null;
                     },
                     onSaved: (value) => trosa.owner = value ?? '',
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: DropdownButtonFormField<String>(
+                    initialValue: trosa.category,
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: l10n.categoryLabel,
+                    ),
+                    items: _categories
+                        .map((c) => DropdownMenuItem<String>(
+                              value: c,
+                              child: Text(_categoryLabel(l10n, c)),
+                            ))
+                        .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        trosa.category = value ?? '';
+                      });
+                    },
+                    onSaved: (value) {
+                      trosa.category = value ?? '';
+                    },
+                  ),
+                ),
+                if (!isNew)
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: TextFormField(
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        _currencyFormatter,
+                      ],
+                      initialValue: trosa.paidAmount > 0
+                          ? _formatter.format(trosa.paidAmount)
+                          : null,
+                      keyboardType: TextInputType.number,
+                      textAlign: TextAlign.end,
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        labelText: l10n.paidAmountLabel,
+                        suffixText: l10n.currencySuffix(symbol),
+                      ),
+                      onSaved: (value) {
+                        final digitsOnly =
+                            value?.replaceAll(RegExp(r'[^\d]'), '');
+                        trosa.paidAmount = double.tryParse(digitsOnly ?? '') ?? 0;
+                      },
+                    ),
+                  ),
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: TextFormField(
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    initialValue:
+                        trosa.recurringDays > 0 ? '${trosa.recurringDays}' : null,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: l10n.recurringLabel,
+                    ),
+                    onSaved: (value) {
+                      trosa.recurringDays = int.tryParse(value ?? '') ?? 0;
+                    },
                   ),
                 ),
                 Padding(
