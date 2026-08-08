@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:trosa/api/trosa_api.dart';
 import 'package:trosa/components/currency_input_formatter.dart';
 import 'package:trosa/db/sqflite_provider.dart';
+import 'package:trosa/l10n/app_localizations.dart';
 import 'package:trosa/models/trosa.dart';
 import 'package:trosa/notifier/trosa_notifier.dart';
 
@@ -77,13 +78,14 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final trosa = _currentTrosa!;
     final isNew = trosa.id == null;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: Text(isNew ? 'Hampiditra Trosa' : 'Fanitsiana Trosa'),
+        title: Text(isNew ? l10n.addDebt : l10n.editDebt),
         actions: <Widget>[
           TextButton(
             style: TextButton.styleFrom(
@@ -119,13 +121,11 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                     textAlign: TextAlign.end,
                     decoration: InputDecoration(
                       border: const OutlineInputBorder(),
-                      labelText: 'Ohatrinona',
-                      suffixText: 'MGA',
+                      labelText: l10n.amountLabel,
+                      suffixText: l10n.currencySuffix,
                       suffixIcon: IconButton(
                         icon: Icon(
-                          trosa.isInflow
-                              ? Icons.add
-                              : Icons.remove,
+                          trosa.isInflow ? Icons.add : Icons.remove,
                           color: trosa.isInflow ? Colors.green : Colors.red,
                           size: 30,
                         ),
@@ -138,7 +138,7 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Mila soratana hoe ohatrinona azafady.';
+                        return l10n.amountRequired;
                       }
                       return null;
                     },
@@ -155,13 +155,13 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                     textCapitalization: TextCapitalization.words,
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Ilay olona',
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: l10n.ownerLabel,
                     ),
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Mila fenoina ny anaran\'ilay olona.';
+                        return l10n.ownerRequired;
                       }
                       return null;
                     },
@@ -173,7 +173,7 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      const Text('Haverina ny '),
+                      Text(l10n.dueDateLabel),
                       TextButton(
                         style: TextButton.styleFrom(
                           padding: EdgeInsets.zero,
@@ -198,8 +198,7 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                         ),
                         onPressed: () async {
                           FocusScope.of(context).unfocus();
-                          final picked =
-                              await _selectDate(trosa.dueDate);
+                          final picked = await _selectDate(trosa.dueDate);
                           if (!mounted) return;
                           setState(() {
                             trosa.dueDate = picked;
@@ -215,9 +214,9 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                     initialValue: trosa.note,
                     keyboardType: TextInputType.multiline,
                     maxLines: 3,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Fanamarihana',
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      labelText: l10n.noteLabel,
                     ),
                     onSaved: (value) {
                       trosa.note = value;

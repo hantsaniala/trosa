@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:trosa/api/trosa_api.dart';
 import 'package:trosa/db/sqflite_provider.dart';
+import 'package:trosa/l10n/app_localizations.dart';
 import 'package:trosa/models/trosa.dart';
 import 'package:trosa/notifier/trosa_notifier.dart';
 import 'package:trosa/screens/trosa/components/trosa_card.dart';
@@ -42,10 +43,11 @@ class _TrosaPageState extends State<TrosaPage> {
   }
 
   Future<void> _shareApp() async {
+    final l10n = AppLocalizations.of(context);
     final box = context.findRenderObject() as RenderBox?;
     await SharePlus.instance.share(
       ShareParams(
-        text: "Ndao hampiasa an'ito $_appUrl",
+        text: l10n.shareAppMessage(_appUrl),
         sharePositionOrigin:
             box != null ? box.localToGlobal(Offset.zero) & box.size : null,
       ),
@@ -53,23 +55,24 @@ class _TrosaPageState extends State<TrosaPage> {
   }
 
   Future<bool> _confirmDeleteTrosa() async {
+    final l10n = AppLocalizations.of(context);
     final result = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Hamafa Trosa'),
-          content: const Text('Tena tianao ho fafana tokoa ve io trosa io ?'),
+          title: Text(l10n.deleteDebtTitle),
+          content: Text(l10n.deleteDebtMessage),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('TSIA'),
+              child: Text(l10n.no),
             ),
             TextButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text(
-                'ENY',
-                style: TextStyle(color: Colors.red),
+              child: Text(
+                l10n.yes,
+                style: const TextStyle(color: Colors.red),
               ),
             ),
           ],
@@ -88,22 +91,23 @@ class _TrosaPageState extends State<TrosaPage> {
   }
 
   void _chooseMenuAction(TrosaNotifier notifier, String choice) {
-    if (choice == Constants.About) {
+    final l10n = AppLocalizations.of(context);
+    if (choice == l10n.about) {
       Navigator.push(
         context,
         MaterialPageRoute<void>(builder: (context) => const TrosaAboutPage()),
       );
-    } else if (choice == Constants.SortByAmount) {
+    } else if (choice == l10n.sortByAmount) {
       setState(() {
         notifier.sortType = 'amount';
         _applySort(notifier);
       });
-    } else if (choice == Constants.SortByDate) {
+    } else if (choice == l10n.sortByDate) {
       setState(() {
         notifier.sortType = 'date';
         _applySort(notifier);
       });
-    } else if (choice == Constants.SortByOwner) {
+    } else if (choice == l10n.sortByOwner) {
       setState(() {
         notifier.sortType = 'owner';
         _applySort(notifier);
@@ -141,12 +145,13 @@ class _TrosaPageState extends State<TrosaPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final trosaNotifier = Provider.of<TrosaNotifier>(context);
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Trosa'),
+        title: Text(l10n.appName),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.share),
@@ -156,12 +161,12 @@ class _TrosaPageState extends State<TrosaPage> {
             icon: const Icon(Icons.more_vert),
             onSelected: (choice) => _chooseMenuAction(trosaNotifier, choice),
             itemBuilder: (context) {
-              return Constants.menuChoices.map((String choice) {
-                return PopupMenuItem<String>(
-                  value: choice,
-                  child: Text(choice),
-                );
-              }).toList();
+              return <PopupMenuEntry<String>>[
+                PopupMenuItem<String>(
+                  value: l10n.about,
+                  child: Text(l10n.about),
+                ),
+              ];
             },
           ),
         ],
@@ -178,23 +183,23 @@ class _TrosaPageState extends State<TrosaPage> {
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
                     children: <Widget>[
-                      const Row(
+                      Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Vola ho raisina'),
-                          Text('Vola mila haloa')
+                        children: <Widget>[
+                          Text(l10n.moneyToReceive),
+                          Text(l10n.moneyToPay),
                         ],
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           Text(
-                            'Ar ${_formatter.format(trosaNotifier.totalInflow)}',
+                            '${l10n.currencyPrefix}${_formatter.format(trosaNotifier.totalInflow)}',
                             style: const TextStyle(
                                 fontSize: 20, color: Colors.green),
                           ),
                           Text(
-                            'Ar ${_formatter.format(trosaNotifier.totalOutflow)}',
+                            '${l10n.currencyPrefix}${_formatter.format(trosaNotifier.totalOutflow)}',
                             style: const TextStyle(
                                 fontSize: 20, color: Colors.red),
                           ),
@@ -208,11 +213,11 @@ class _TrosaPageState extends State<TrosaPage> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: <Widget>[
                           Text(
-                            'Toe-bolanao',
+                            l10n.balance,
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                           Text(
-                            'Ar ${_formatter.format(trosaNotifier.balance)}',
+                            '${l10n.currencyPrefix}${_formatter.format(trosaNotifier.balance)}',
                             style: TextStyle(
                               fontSize: 30,
                               fontWeight: FontWeight.w300,
@@ -233,7 +238,7 @@ class _TrosaPageState extends State<TrosaPage> {
               child: Row(
                 children: [
                   Text(
-                    "Lisitr'ireo Trosa",
+                    l10n.debtListTitle,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const Spacer(),
@@ -248,12 +253,20 @@ class _TrosaPageState extends State<TrosaPage> {
                     onSelected: (choice) =>
                         _chooseMenuAction(trosaNotifier, choice),
                     itemBuilder: (context) {
-                      return Constants.sortChoices.map((String choice) {
-                        return PopupMenuItem<String>(
-                          value: choice,
-                          child: Text(choice),
-                        );
-                      }).toList();
+                      return <PopupMenuEntry<String>>[
+                        PopupMenuItem<String>(
+                          value: l10n.sortByDate,
+                          child: Text(l10n.sortByDate),
+                        ),
+                        PopupMenuItem<String>(
+                          value: l10n.sortByOwner,
+                          child: Text(l10n.sortByOwner),
+                        ),
+                        PopupMenuItem<String>(
+                          value: l10n.sortByAmount,
+                          child: Text(l10n.sortByAmount),
+                        ),
+                      ];
                     },
                   ),
                 ],
@@ -292,7 +305,8 @@ class _TrosaPageState extends State<TrosaPage> {
                               left: 5, right: 5, top: 2, bottom: 0),
                           child: TrosaCard(
                             isInflow: trosa.isInflow,
-                            amount: _formatter.format(trosa.amount).toString(),
+                            amount:
+                                _formatter.format(trosa.amount).toString(),
                             owner: trosa.owner,
                             dueDate: DateFormat('d/M/y').format(trosa.dueDate),
                             date: DateFormat('d/M/y').format(trosa.date),
@@ -313,24 +327,9 @@ class _TrosaPageState extends State<TrosaPage> {
           trosaNotifier.currentTrosa = null;
           _gotoAddPage();
         },
-        tooltip: 'Hampiditra Trosa',
+        tooltip: l10n.addDebt,
         child: const Icon(Icons.add),
       ),
     );
   }
-}
-
-class Constants {
-  static const String About = 'Mombamomba';
-
-  static const String SortByDate = 'Daty';
-  static const String SortByOwner = 'Anarana';
-  static const String SortByAmount = 'Sandany';
-
-  static const List<String> menuChoices = <String>[About];
-  static const List<String> sortChoices = <String>[
-    SortByDate,
-    SortByOwner,
-    SortByAmount
-  ];
 }

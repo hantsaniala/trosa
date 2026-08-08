@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trosa/l10n/app_localizations.dart';
 
 class TrosaCard extends StatelessWidget {
   final bool isInflow;
@@ -20,6 +21,7 @@ class TrosaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Card(
       child: ListTile(
         dense: true,
@@ -37,7 +39,7 @@ class TrosaCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
                 Text(
-                  'Ar $amount',
+                  '${l10n.currencyPrefix}$amount',
                   style: const TextStyle(fontSize: 18),
                 ),
                 Text(

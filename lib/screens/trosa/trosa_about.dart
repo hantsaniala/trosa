@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:trosa/l10n/app_localizations.dart';
 
 class TrosaAboutPage extends StatefulWidget {
   const TrosaAboutPage({super.key});
@@ -28,6 +29,7 @@ class _TrosaAboutPageState extends State<TrosaAboutPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final size = MediaQuery.of(context).size;
     final info = _packageInfo;
     final version = info != null
@@ -36,7 +38,7 @@ class _TrosaAboutPageState extends State<TrosaAboutPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mombamomba ny Trosa'),
+        title: Text(l10n.aboutTitle),
       ),
       body: Padding(
         padding: const EdgeInsets.only(left: 20, right: 20),
@@ -50,7 +52,7 @@ class _TrosaAboutPageState extends State<TrosaAboutPage> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
                 Text(
-                  'Trosa',
+                  l10n.appName,
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 SizedBox(
@@ -69,7 +71,7 @@ class _TrosaAboutPageState extends State<TrosaAboutPage> {
               height: size.height * .02,
             ),
             Text(
-              'Application natao handraisana naoty ireo trosa tokony haloa sy mila takiana.',
+              l10n.aboutDescription,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             SizedBox(
@@ -78,9 +80,9 @@ class _TrosaAboutPageState extends State<TrosaAboutPage> {
             Center(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const <Widget>[
-                  Text('Powered by'),
-                  FlutterLogo(),
+                children: <Widget>[
+                  Text(l10n.poweredBy),
+                  const FlutterLogo(),
                 ],
               ),
             )
