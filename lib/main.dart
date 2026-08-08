@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:trosa/const.dart';
 import 'package:trosa/l10n/app_localizations.dart';
+import 'package:trosa/notifier/settings_notifier.dart';
 import 'package:trosa/notifier/trosa_notifier.dart';
 import 'package:trosa/screens/trosa/trosa_screen.dart';
 
@@ -18,8 +19,11 @@ class TrosaApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
+          create: (context) => SettingsNotifier(),
+        ),
+        ChangeNotifierProvider(
           create: (context) => TrosaNotifier(),
-        )
+        ),
       ],
       child: const Trosa(),
     );
@@ -31,11 +35,18 @@ class Trosa extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final settings = Provider.of<SettingsNotifier>(context);
     return MaterialApp(
       title: 'Trosa',
       theme: ThemeData(
         primarySwatch: kPrimaryColor,
+        brightness: Brightness.light,
       ),
+      darkTheme: ThemeData(
+        primarySwatch: kPrimaryColor,
+        brightness: Brightness.dark,
+      ),
+      themeMode: settings.themeMode,
       debugShowCheckedModeBanner: false,
       locale: const Locale('mg'),
       supportedLocales: AppLocalizations.supportedLocales,
