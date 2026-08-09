@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:trosa/const.dart';
 import 'package:trosa/l10n/app_localizations.dart';
 import 'package:trosa/notifier/settings_notifier.dart';
 import 'package:trosa/notifier/trosa_notifier.dart';
 import 'package:trosa/screens/trosa/trosa_screen.dart';
+import 'package:trosa/theme.dart';
 
 void main() {
   runApp(const TrosaApp());
@@ -38,14 +38,8 @@ class Trosa extends StatelessWidget {
     final settings = Provider.of<SettingsNotifier>(context);
     return MaterialApp(
       title: 'Trosa',
-      theme: ThemeData(
-        primarySwatch: kPrimaryColor,
-        brightness: Brightness.light,
-      ),
-      darkTheme: ThemeData(
-        primarySwatch: kPrimaryColor,
-        brightness: Brightness.dark,
-      ),
+      theme: AppTheme.light(),
+      darkTheme: AppTheme.dark(),
       themeMode: settings.themeMode,
       debugShowCheckedModeBanner: false,
       locale: const Locale('mg'),
