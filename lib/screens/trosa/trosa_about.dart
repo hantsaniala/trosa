@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:trosa/components/trosa_mark.dart';
 import 'package:trosa/l10n/app_localizations.dart';
 
 class TrosaAboutPage extends StatefulWidget {
@@ -30,62 +31,55 @@ class _TrosaAboutPageState extends State<TrosaAboutPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final size = MediaQuery.of(context).size;
+    final theme = Theme.of(context);
     final info = _packageInfo;
-    final version = info != null
-        ? '${info.version}.${info.buildNumber}'
-        : '';
+    final version =
+        info != null ? '${info.version}.${info.buildNumber}' : '';
 
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.aboutTitle),
       ),
       body: Padding(
-        padding: const EdgeInsets.only(left: 20, right: 20),
+        padding: const EdgeInsets.fromLTRB(24, 28, 24, 12),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            SizedBox(
-              height: size.height * .05,
+            // Brand mark: the same yellow double-arrow as the launcher icon.
+            const Center(child: TrosaMark(size: 112)),
+            const SizedBox(height: 20),
+            Center(
+              child: Text(
+                l10n.appName,
+                style: theme.textTheme.headlineMedium
+                    ?.copyWith(fontWeight: FontWeight.w800),
+              ),
             ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: <Widget>[
-                Text(
-                  l10n.appName,
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                SizedBox(
-                  width: size.width * .02,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: Text(
-                    version,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                ),
-              ],
+            const SizedBox(height: 4),
+            Center(
+              child: Text(
+                version,
+                style: theme.textTheme.titleMedium
+                    ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              ),
             ),
-            SizedBox(
-              height: size.height * .02,
-            ),
+            const SizedBox(height: 28),
             Text(
               l10n.aboutDescription,
-              style: Theme.of(context).textTheme.titleMedium,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleMedium,
             ),
-            SizedBox(
-              height: size.height * .05,
-            ),
+            const Spacer(),
             Center(
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Text(l10n.poweredBy),
+                  const SizedBox(width: 8),
                   const FlutterLogo(),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),
