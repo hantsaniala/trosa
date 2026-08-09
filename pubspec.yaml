@@ -43,6 +43,9 @@ flutter_launcher_icons:
   ios: true
   remove_alpha_ios: true
   image_path: "assets/icons/main_icon.png"
+  image_path_ios: "assets/icons/main_icon_ios.png"
+  adaptive_icon_background: "#FECE00"
+  adaptive_icon_foreground: "assets/icons/main_icon_foreground.png"
 
 flutter:
   generate: true
