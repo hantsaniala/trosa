@@ -15,6 +15,7 @@ import 'package:trosa/screens/trosa/trosa_form_screen.dart';
 import 'package:trosa/screens/trosa/trosa_settings_dialog.dart';
 import 'package:trosa/screens/trosa/trosa_stats_screen.dart';
 import 'package:trosa/services/notification_service.dart';
+import 'package:trosa/theme.dart';
 
 enum StatusFilter { all, unpaid, paid, overdue }
 
@@ -275,7 +276,6 @@ class _TrosaPageState extends State<TrosaPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final settings = Provider.of<SettingsNotifier>(context);
-    final size = MediaQuery.of(context).size;
     final symbol = settings.currencySymbol;
 
     // Note: no Provider.of<TrosaNotifier> here on purpose. Each piece that
@@ -319,77 +319,103 @@ class _TrosaPageState extends State<TrosaPage> {
           children: <Widget>[
             Consumer<TrosaNotifier>(
               builder: (context, notifier, _) {
+                final balance = notifier.balance;
                 return Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: <Widget>[
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text(l10n.moneyToReceive),
-                              Text(l10n.moneyToPay),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text(
-                                '${l10n.currencyPrefix(symbol)}${_formatter.format(notifier.totalInflow)}',
-                                style: const TextStyle(
-                                    fontSize: 20, color: Colors.green),
-                              ),
-                              Text(
-                                '${l10n.currencyPrefix(symbol)}${_formatter.format(notifier.totalOutflow)}',
-                                style: const TextStyle(
-                                    fontSize: 20, color: Colors.red),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: size.height * .03,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: <Widget>[
-                              Text(
-                                l10n.balance,
-                                style: Theme.of(context).textTheme.titleLarge,
-                              ),
-                              Text(
-                                '${l10n.currencyPrefix(symbol)}${_formatter.format(notifier.balance)}',
-                                style: TextStyle(
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.w300,
-                                  color: (notifier.balance <= 0)
-                                      ? Colors.red
-                                      : Colors.green,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                  padding: const EdgeInsets.fromLTRB(12, 10, 12, 4),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(22),
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [AppTheme.brand, AppTheme.brandDeep],
                       ),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0x33C78E00),
+                          blurRadius: 16,
+                          offset: Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            _heroLabel(l10n.moneyToReceive, Icons.south_west),
+                            _heroLabel(l10n.moneyToPay, Icons.north_east),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              '${l10n.currencyPrefix(symbol)}${_formatter.format(notifier.totalInflow)}',
+                              style: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFF1E6B2F),
+                              ),
+                            ),
+                            Text(
+                              '${l10n.currencyPrefix(symbol)}${_formatter.format(notifier.totalOutflow)}',
+                              style: const TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFFB3261E),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                          child: Divider(
+                            height: 1,
+                            color: Color(0x55241D00),
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: <Widget>[
+                            Text(
+                              l10n.balance,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xB3241D00),
+                              ),
+                            ),
+                            Text(
+                              '${l10n.currencyPrefix(symbol)}${_formatter.format(balance)}',
+                              style: TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.w800,
+                                color: balance <= 0
+                                    ? const Color(0xFFB3261E)
+                                    : const Color(0xFF1E6B2F),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 );
               },
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
+              padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
               child: TextField(
                 controller: _searchController,
                 onChanged: _onSearchChanged,
                 decoration: InputDecoration(
-                  isDense: true,
                   prefixIcon: const Icon(Icons.search),
                   hintText: l10n.searchHint,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
                 ),
               ),
             ),
@@ -554,6 +580,25 @@ class _TrosaPageState extends State<TrosaPage> {
         selected: _statusFilter == filter,
         onSelected: (_) => _onFilterChanged(filter),
       ),
+    );
+  }
+
+  /// Small label with an icon used inside the brand hero card.
+  Widget _heroLabel(String text, IconData icon) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Icon(icon, size: 15, color: const Color(0xB3241D00)),
+        const SizedBox(width: 4),
+        Text(
+          text,
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Color(0xB3241D00),
+          ),
+        ),
+      ],
     );
   }
 }
