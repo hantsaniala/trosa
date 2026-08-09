@@ -23,6 +23,9 @@ class TrosaCard extends StatelessWidget {
   static const Color _overdueBackground = Color(0x1AF44336); // red @ 10%
   static const Color _dueSoonBackground = Color(0x2EFFC107); // amber @ 18%
 
+  static const Color _green = Color(0xFF2E7D32);
+  static const Color _red = Color(0xFFC62828);
+
   const TrosaCard({
     super.key,
     required this.isInflow,
@@ -43,6 +46,8 @@ class TrosaCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
+
     final Color cardColor;
     if (isPaid) {
       cardColor = _paidBackground;
@@ -51,13 +56,16 @@ class TrosaCard extends StatelessWidget {
     } else if (isDueSoon) {
       cardColor = _dueSoonBackground;
     } else {
-      cardColor = Theme.of(context).colorScheme.surface;
+      cardColor = scheme.surfaceContainerLow;
     }
 
     final partial =
         !isPaid && paidAmount > 0 && remaining.isNotEmpty;
     final amountText =
         '${l10n.currencyPrefix(symbol)}$amount${partial ? ' (${l10n.remainingText(remaining)})' : ''}';
+
+    final bool strongInflow = isInflow && !isPaid;
+    final Color accent = isPaid ? _green : (strongInflow ? _green : _red);
 
     // elevation: 0 + transparent surface tint: card rows are cheap flat
     // surfaces instead of shadow-blended layers (list rows + shadows were a
@@ -66,12 +74,29 @@ class TrosaCard extends StatelessWidget {
       elevation: 0,
       surfaceTintColor: Colors.transparent,
       color: cardColor,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ListTile(
         dense: true,
-        leading: Icon(
-          isInflow ? Icons.add : Icons.remove,
-          color: isInflow ? Colors.green : Colors.red,
-          size: 35,
+        leading: Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            color: isPaid
+                ? _green
+                : strongInflow
+                    ? const Color(0x1E4CAF50)
+                    : const Color(0x1EF44336),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            isPaid
+                ? Icons.check
+                : strongInflow
+                    ? Icons.south_west
+                    : Icons.north_east,
+            size: 20,
+            color: isPaid ? Colors.white : accent,
+          ),
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,7 +107,11 @@ class TrosaCard extends StatelessWidget {
                 Flexible(
                   child: Text(
                     amountText,
-                    style: const TextStyle(fontSize: 18),
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
+                      color: scheme.onSurface,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -91,10 +120,11 @@ class TrosaCard extends StatelessWidget {
                     padding: const EdgeInsets.only(left: 6),
                     child: Text(
                       category,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(color: Colors.grey),
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: scheme.onSurfaceVariant,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -105,7 +135,11 @@ class TrosaCard extends StatelessWidget {
                 Flexible(
                   child: Text(
                     owner,
-                    style: Theme.of(context).textTheme.bodyLarge,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: scheme.onSurface,
+                    ),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
@@ -115,7 +149,7 @@ class TrosaCard extends StatelessWidget {
                     padding: EdgeInsets.only(left: 6),
                     child: Icon(
                       Icons.check_circle,
-                      color: Colors.green,
+                      color: _green,
                       size: 14,
                     ),
                   ),
@@ -123,7 +157,7 @@ class TrosaCard extends StatelessWidget {
                     padding: const EdgeInsets.only(left: 2),
                     child: Text(
                       l10n.paidBadge,
-                      style: const TextStyle(fontSize: 11, color: Colors.green),
+                      style: const TextStyle(fontSize: 11, color: _green),
                     ),
                   ),
                 ],
@@ -144,21 +178,35 @@ class TrosaCard extends StatelessWidget {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.calendar_today, size: 12),
+                Icon(
+                  Icons.calendar_today,
+                  size: 12,
+                  color: scheme.onSurfaceVariant,
+                ),
                 Text(
                   ' $dueDate',
-                  style: const TextStyle(fontSize: 13),
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: scheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.drive_file_rename_outline, size: 12),
+                Icon(
+                  Icons.drive_file_rename_outline,
+                  size: 12,
+                  color: scheme.onSurfaceVariant,
+                ),
                 Text(
                   ' $date',
-                  style: const TextStyle(
-                      fontSize: 11, fontWeight: FontWeight.w400),
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w400,
+                    color: scheme.onSurfaceVariant,
+                  ),
                 ),
               ],
             ),
