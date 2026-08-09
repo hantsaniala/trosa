@@ -76,15 +76,26 @@ class _TrosaStatsScreenState extends State<TrosaStatsScreen> {
   }
 
   Widget _statCard(BuildContext context, String label, String value) {
+    final scheme = Theme.of(context).colorScheme;
     return Expanded(
       child: Card(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          padding: const EdgeInsets.symmetric(vertical: 14),
           child: Column(
             children: <Widget>[
-              Text(value, style: Theme.of(context).textTheme.titleLarge),
+              Text(
+                value,
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge
+                    ?.copyWith(fontWeight: FontWeight.w800),
+              ),
+              const SizedBox(height: 2),
               Text(label,
-                  style: Theme.of(context).textTheme.bodySmall,
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodySmall
+                      ?.copyWith(color: scheme.onSurfaceVariant),
                   textAlign: TextAlign.center),
             ],
           ),
@@ -115,6 +126,7 @@ class _TrosaStatsScreenState extends State<TrosaStatsScreen> {
     final maxNet =
         netByMonth.values.map((v) => v.abs()).fold<double>(0, (a, b) => a > b ? a : b);
 
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -135,21 +147,23 @@ class _TrosaStatsScreenState extends State<TrosaStatsScreen> {
                   children: <Widget>[
                     Text(
                       value == 0 ? '' : _formatter.format(value.abs()),
-                      style: const TextStyle(fontSize: 9),
+                      style: TextStyle(fontSize: 9, color: scheme.onSurfaceVariant),
                     ),
                     const SizedBox(height: 4),
                     Container(
                       height: height,
                       width: 22,
                       decoration: BoxDecoration(
-                        color: value >= 0 ? Colors.green : Colors.red,
-                        borderRadius: BorderRadius.circular(4),
+                        color: value >= 0
+                            ? const Color(0xFF2E7D32)
+                            : const Color(0xFFC62828),
+                        borderRadius: BorderRadius.circular(6),
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       _monthFormat.format(m),
-                      style: const TextStyle(fontSize: 10),
+                      style: TextStyle(fontSize: 10, color: scheme.onSurfaceVariant),
                     ),
                   ],
                 ),

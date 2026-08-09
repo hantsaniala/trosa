@@ -110,6 +110,7 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
     final trosa = _currentTrosa!;
     final isNew = trosa.id == null;
     final symbol = settings.currencySymbol;
+    final hintColor = Theme.of(context).colorScheme.onSurfaceVariant;
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -118,10 +119,7 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
         actions: <Widget>[
           TextButton(
             style: TextButton.styleFrom(
-              foregroundColor: Colors.black,
-              shape: const CircleBorder(
-                side: BorderSide(color: Colors.transparent),
-              ),
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
             ),
             onPressed: _saveTrosa,
             child: const Icon(Icons.check, size: 30),
@@ -149,7 +147,6 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                     keyboardType: TextInputType.number,
                     textAlign: TextAlign.end,
                     decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
                       labelText: l10n.amountLabel,
                       suffixText: l10n.currencySuffix(symbol),
                       suffixIcon: IconButton(
@@ -185,7 +182,6 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
                     decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
                       labelText: l10n.ownerLabel,
                     ),
                     validator: (value) {
@@ -202,7 +198,6 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                   child: DropdownButtonFormField<String>(
                     initialValue: trosa.category,
                     decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
                       labelText: l10n.categoryLabel,
                     ),
                     items: _categories
@@ -254,7 +249,6 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                         trosa.recurringDays > 0 ? '${trosa.recurringDays}' : null,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
                       labelText: l10n.recurringLabel,
                     ),
                     onSaved: (value) {
@@ -274,19 +268,19 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                         ),
                         child: Row(
                           children: <Widget>[
-                            const Icon(
+                            Icon(
                               Icons.calendar_today,
                               size: 22.0,
-                              color: Colors.black54,
+                              color: hintColor,
                             ),
                             const SizedBox(width: 16.0),
                             Text(
                               DateFormat.yMMMEd().format(trosa.dueDate),
-                              style: const TextStyle(color: Colors.black54),
+                              style: TextStyle(color: hintColor),
                             ),
-                            const Icon(
+                            Icon(
                               Icons.arrow_drop_down,
-                              color: Colors.black54,
+                              color: hintColor,
                             ),
                           ],
                         ),
@@ -309,7 +303,6 @@ class _TrosaAddPageState extends State<TrosaAddPage> {
                     keyboardType: TextInputType.multiline,
                     maxLines: 3,
                     decoration: InputDecoration(
-                      border: const OutlineInputBorder(),
                       labelText: l10n.noteLabel,
                     ),
                     onSaved: (value) {
