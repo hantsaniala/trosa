@@ -32,10 +32,15 @@ abstract final class AppTheme {
           onSecondary: Colors.white,
           secondaryContainer: const Color(0xFFFFE08A),
           onSecondaryContainer: const Color(0xFF2E2300),
-          surface: const Color(0xFFFFFBF3),
-          onSurface: const Color(0xFF201B0C),
-          onSurfaceVariant: const Color(0xFF4F4A3A),
-          outline: const Color(0xFF817A66),
+          // Pure-white "white mode": clean white surfaces with near-black
+          // ink, cards and input fills in light neutrals so panels stay
+          // subtly separated without the warm cream tint.
+          surface: const Color(0xFFFFFFFF),
+          onSurface: const Color(0xFF1C1A15),
+          onSurfaceVariant: const Color(0xFF4E4B43),
+          surfaceContainerLow: const Color(0xFFF7F6F1),
+          surfaceContainerHighest: const Color(0xFFECEAE2),
+          outline: const Color(0xFF7C7668),
         ),
       );
 
