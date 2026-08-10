@@ -5,7 +5,11 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:trosa/db/sqflite_provider.dart';
 import 'package:trosa/models/trosa.dart';
 
-/// Schedules a local notification one day before a debt's due date.
+/// Schedules local notifications for debt reminders.
+///
+/// Each debt can opt out, choose how many days before the due date to be
+/// reminded, and the time of day. Overdue debts get a daily nag at the
+/// configured reminder time until they are paid.
 ///
 /// All platform calls are wrapped in try/catch so the service is a no-op in
 /// environments without the plugins (e.g. widget tests).
@@ -60,18 +64,37 @@ class NotificationService {
   Future<void> _schedule(
       Trosa trosa, String title, String Function(Trosa) bodyFor) async {
     final id = trosa.id;
-    if (id == null) return;
+    if (id == null || !trosa.reminderEnabled) return;
 
-    // Remind one day before the due date (or today if due sooner).
-    var reminder = trosa.dueDate.subtract(const Duration(days: 1));
-    final now = DateTime.now();
-    if (reminder.isBefore(now)) {
-      reminder = now.add(const Duration(minutes: 5));
+    final now = tz.TZDateTime.now(tz.local);
+    final due = tz.TZDateTime(
+      tz.local,
+      trosa.dueDate.year,
+      trosa.dueDate.month,
+      trosa.dueDate.day,
+    );
+
+    if (due.isBefore(now)) {
+      // Overdue: nag every day at the configured reminder time until paid.
+      await _scheduleDaily(
+          id, title, bodyFor(trosa), now, trosa.reminderTimeMinutes);
+      return;
     }
+
+    // Reminder fires reminderDaysBefore days before the due date, at the
+    // configured time of day.
+    final reminder = due
+        .subtract(Duration(days: trosa.reminderDaysBefore))
+        .add(Duration(minutes: trosa.reminderTimeMinutes));
+    final scheduledDate = reminder.isBefore(now)
+        ? now.add(const Duration(minutes: 5))
+        : reminder;
 
     await _plugin.zonedSchedule(
       id: id,
-      scheduledDate: tz.TZDateTime.from(reminder, tz.local),
+      title: title,
+      body: bodyFor(trosa),
+      scheduledDate: scheduledDate,
       notificationDetails: const NotificationDetails(
         android: AndroidNotificationDetails(
           'reminders',
@@ -84,8 +107,38 @@ class NotificationService {
         iOS: DarwinNotificationDetails(),
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      matchDateTimeComponents: null,
+    );
+  }
+
+  /// Schedules a notification that repeats daily at the reminder time while
+  /// the debt stays overdue.
+  Future<void> _scheduleDaily(int id, String title, String body,
+      tz.TZDateTime now, int timeMinutes) async {
+    var next = tz.TZDateTime(tz.local, now.year, now.month, now.day,
+        timeMinutes ~/ 60, timeMinutes % 60);
+    if (!next.isAfter(now)) {
+      next = next.add(const Duration(days: 1));
+    }
+
+    await _plugin.zonedSchedule(
+      id: id,
       title: title,
-      body: bodyFor(trosa),
+      body: body,
+      scheduledDate: next,
+      notificationDetails: const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'reminders',
+          'Fampahatsiahivana trosa',
+          channelDescription:
+              'Fampahatsiahivana ny trosa tokony haloa na takiana.',
+          importance: Importance.high,
+          priority: Priority.high,
+        ),
+        iOS: DarwinNotificationDetails(),
+      ),
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      matchDateTimeComponents: DateTimeComponents.time,
     );
   }
 
