@@ -1,9 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
+import 'package:trosa/components/trosa_mark.dart';
 import 'package:trosa/l10n/app_localizations.dart';
 import 'package:trosa/notifier/settings_notifier.dart';
 import 'package:trosa/notifier/trosa_notifier.dart';
+import 'package:trosa/screens/trosa/trosa_onboarding.dart';
 import 'package:trosa/screens/trosa/trosa_screen.dart';
 import 'package:trosa/theme.dart';
 
@@ -30,8 +33,30 @@ class TrosaApp extends StatelessWidget {
   }
 }
 
-class Trosa extends StatelessWidget {
+/// Loads persisted settings before deciding whether to show the onboarding
+/// flow or the dashboard.
+class Trosa extends StatefulWidget {
   const Trosa({super.key});
+
+  @override
+  State<Trosa> createState() => _TrosaState();
+}
+
+class _TrosaState extends State<Trosa> {
+  bool _settingsLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final settings =
+          Provider.of<SettingsNotifier>(context, listen: false);
+      await settings.load();
+      if (mounted) {
+        setState(() => _settingsLoaded = true);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,16 +67,37 @@ class Trosa extends StatelessWidget {
       darkTheme: AppTheme.dark(),
       themeMode: settings.themeMode,
       debugShowCheckedModeBanner: false,
-      locale: const Locale('mg'),
+      locale: Locale(settings.language),
       supportedLocales: AppLocalizations.supportedLocales,
-      localizationsDelegates: <LocalizationsDelegate<dynamic>>[
+      localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
         AppLocalizations.delegate,
-        // English defaults for framework-level strings (date picker, etc.);
-        // the app's own strings come from the Malagasy AppLocalizations.
-        const _EnglishMaterialLocalizationsDelegate(),
-        const _EnglishCupertinoLocalizationsDelegate(),
+        // Framework strings (date pickers, dialogs, etc.) for fr/en. The app
+        // locale can also be mg, which GlobalMaterialLocalizations does not
+        // cover — the English fallback delegate below handles that.
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        _EnglishMaterialLocalizationsDelegate(),
+        _EnglishCupertinoLocalizationsDelegate(),
       ],
-      home: const TrosaPage(),
+      home: !_settingsLoaded
+          ? const _Splash()
+          : settings.onboardingDone
+              ? const TrosaPage()
+              : const TrosaOnboardingScreen(),
+    );
+  }
+}
+
+/// Brand-yellow splash shown while the persisted settings are loading.
+class _Splash extends StatelessWidget {
+  const _Splash();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      backgroundColor: AppTheme.brand,
+      body: Center(child: TrosaMark(size: 96)),
     );
   }
 }
