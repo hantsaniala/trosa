@@ -1,124 +1,227 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:sqflite/sqlite_api.dart';
-import 'package:Trosa/models/trosa.dart';
-import 'package:sqflite_migration/sqflite_migration.dart';
-import 'dart:async';
+import 'package:trosa/models/trosa.dart';
 
 class DatabaseProvider {
-  static const String TABLE_TROSA = "trosa";
-  static const String COLUMN_ID = 'id';
-  static const String COLUMN_OWNER = 'owner';
-  static const String COLUMN_AMOUNT = 'amount';
-  static const String COLUMN_ISINFLOW = 'isInflow';
-  static const String COLUMN_DATE = 'date';
-  static const String COLUMN_DUEDATE = 'dueDate';
-  static const String COLUMN_NOTE = 'note';
+  static const String tableTrosa = 'trosa';
+  static const String columnId = 'id';
+  static const String columnOwner = 'owner';
+  static const String columnAmount = 'amount';
+  static const String columnIsInflow = 'isInflow';
+  static const String columnDate = 'date';
+  static const String columnDueDate = 'dueDate';
+  static const String columnNote = 'note';
+  static const String columnPaidAmount = 'paidAmount';
+  static const String columnCategory = 'category';
+  static const String columnRecurringDays = 'recurringDays';
+  static const String columnPaidDate = 'paidDate';
+  static const String columnReminderEnabled = 'reminderEnabled';
+  static const String columnReminderDaysBefore = 'reminderDaysBefore';
+  static const String columnReminderTimeMinutes = 'reminderTimeMinutes';
+
+  static const String _settingsTable = 'settings';
+  static const String _settingsColumnKey = 'key';
+  static const String _settingsColumnValue = 'value';
+
+  static const int _databaseVersion = 4;
+
+  static const String _createTableSql = '''
+CREATE TABLE $tableTrosa (
+  $columnId INTEGER PRIMARY KEY,
+  $columnAmount TEXT,
+  $columnOwner TEXT,
+  $columnDate TEXT,
+  $columnDueDate TEXT,
+  $columnIsInflow INTEGER,
+  $columnNote TEXT,
+  $columnPaidAmount TEXT NOT NULL DEFAULT '0',
+  $columnCategory TEXT NOT NULL DEFAULT '',
+  $columnRecurringDays INTEGER NOT NULL DEFAULT 0,
+  $columnPaidDate TEXT,
+  $columnReminderEnabled INTEGER NOT NULL DEFAULT 1,
+  $columnReminderDaysBefore INTEGER NOT NULL DEFAULT 1,
+  $columnReminderTimeMinutes INTEGER NOT NULL DEFAULT 540
+)''';
+
+  static const String _createSettingsTableSql = '''
+CREATE TABLE $_settingsTable (
+  $_settingsColumnKey TEXT PRIMARY KEY,
+  $_settingsColumnValue TEXT
+)''';
+
+  static const String _addNoteColumnSql =
+      'ALTER TABLE $tableTrosa ADD COLUMN $columnNote TEXT';
+  static const String _addPaidAmountColumnSql =
+      "ALTER TABLE $tableTrosa ADD COLUMN $columnPaidAmount TEXT NOT NULL DEFAULT '0'";
+  static const String _addCategoryColumnSql =
+      "ALTER TABLE $tableTrosa ADD COLUMN $columnCategory TEXT NOT NULL DEFAULT ''";
+  static const String _addRecurringDaysColumnSql =
+      'ALTER TABLE $tableTrosa ADD COLUMN $columnRecurringDays INTEGER NOT NULL DEFAULT 0';
+  static const String _addPaidDateColumnSql =
+      'ALTER TABLE $tableTrosa ADD COLUMN $columnPaidDate TEXT';
+  static const String _addReminderEnabledColumnSql =
+      'ALTER TABLE $tableTrosa ADD COLUMN $columnReminderEnabled INTEGER NOT NULL DEFAULT 1';
+  static const String _addReminderDaysBeforeColumnSql =
+      'ALTER TABLE $tableTrosa ADD COLUMN $columnReminderDaysBefore INTEGER NOT NULL DEFAULT 1';
+  static const String _addReminderTimeMinutesColumnSql =
+      'ALTER TABLE $tableTrosa ADD COLUMN $columnReminderTimeMinutes INTEGER NOT NULL DEFAULT 540';
 
   DatabaseProvider._();
   static final DatabaseProvider db = DatabaseProvider._();
 
   Database? _database;
-  String? path;
 
-  static final initScript = [
-    '''CREATE TABLE $TABLE_TROSA (
-          $COLUMN_ID INTEGER PRIMARY KEY,
-          $COLUMN_AMOUNT TEXT,
-          $COLUMN_OWNER TEXT,
-          $COLUMN_DATE TEXT,
-          $COLUMN_DUEDATE TEXT,
-          $COLUMN_ISINFLOW INTEGER
-          )''',
-  ];
+  /// Test hook: opens an in-memory database instead of the on-disk file.
+  bool debugUseInMemory = false;
 
-  static final migrations = [
-    '''ALTER TABLE $TABLE_TROSA ADD $COLUMN_NOTE TEXT''',
-  ];
+  /// Test hook: closes and forgets the current database.
+  Future<void> debugClose() async {
+    await _database?.close();
+    _database = null;
+  }
 
-  final config = MigrationConfig(
-      initializationScript: initScript, migrationScripts: migrations);
-
-  Future<Database?> get database async {
+  Future<Database> get database async {
     if (_database != null) {
-      return _database;
+      return _database!;
     }
 
-    _database = await openDatabase();
-    return _database;
+    final dbPath = await getDatabasesPath();
+    final path = debugUseInMemory ? inMemoryDatabasePath : join(dbPath, 'trosa.db');
+
+    _database = await openDatabase(
+      path,
+      version: _databaseVersion,
+      onCreate: (db, version) async {
+        await db.execute(_createTableSql);
+        await db.execute(_createSettingsTableSql);
+      },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await db.execute(_addNoteColumnSql);
+        }
+        if (oldVersion < 3) {
+          await db.execute(_addPaidAmountColumnSql);
+          await db.execute(_addCategoryColumnSql);
+          await db.execute(_addRecurringDaysColumnSql);
+          await db.execute(_createSettingsTableSql);
+        }
+        if (oldVersion < 4) {
+          await db.execute(_addPaidDateColumnSql);
+          await db.execute(_addReminderEnabledColumnSql);
+          await db.execute(_addReminderDaysBeforeColumnSql);
+          await db.execute(_addReminderTimeMinutesColumnSql);
+        }
+      },
+    );
+    return _database!;
   }
 
-  Future<Database?> openDatabase() async {
-    String dbPath = await getDatabasesPath();
-    final path = join(dbPath, 'trosa.db');
-
-    return await openDatabaseWithMigration(path, config);
-  }
-
-  Future<List<Trosa?>> getTrosa() async {
-    print('Get Trosa list from DB');
+  Future<List<Trosa>> getTrosa() async {
     final db = await database;
-
-    var trosa = await db?.query(TABLE_TROSA, columns: [
-      COLUMN_ID,
-      COLUMN_AMOUNT,
-      COLUMN_OWNER,
-      COLUMN_DATE,
-      COLUMN_DUEDATE,
-      COLUMN_ISINFLOW,
-      COLUMN_NOTE
-    ]);
-
-    List<Trosa> trosaList = [];
-
-    trosa?.forEach((currentTrosa) {
-      Trosa trosa = Trosa.fromMap(currentTrosa);
-
-      trosaList.add(trosa);
-    });
-
-    return trosaList;
+    final rows = await db.query(tableTrosa);
+    return rows.map(Trosa.fromMap).toList();
   }
 
-  Future<Trosa?> insert(Trosa? trosa) async {
-    print('Inserting a new Trosa to the DB');
+  Future<Trosa> insert(Trosa trosa) async {
     final db = await database;
-    await db?.insert(TABLE_TROSA, trosa!.toMap());
+    final id = await db.insert(tableTrosa, trosa.toMap());
+    trosa.id = id;
     return trosa;
   }
 
-  Future<int?> delete(Trosa? trosa) async {
-    print('Deleting a Trosa from the DB');
+  Future<int> delete(Trosa trosa) async {
     final db = await database;
-
-    return await db?.delete(
-      TABLE_TROSA,
-      where: 'id = ?',
-      whereArgs: [trosa?.id],
-    );
+    return db.delete(tableTrosa,
+        where: '$columnId = ?', whereArgs: [trosa.id]);
   }
 
-  Future<int?> update(Trosa? trosa) async {
-    print('Updating an existing Trosa from the DB');
+  /// Re-inserts a previously deleted record (used by the undo action).
+  Future<void> restore(Trosa trosa) async {
     final db = await database;
-
-    return await db?.update(TABLE_TROSA, trosa!.toMap(),
-        where: 'id = ?', whereArgs: [trosa.id]);
+    final map = trosa.toMap();
+    if (trosa.id != null) {
+      map[columnId] = trosa.id;
+    }
+    await db.insert(tableTrosa, map,
+        conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  Future totalInflow() async {
-    print('Getting the inflow total');
+  Future<int> update(Trosa trosa) async {
     final db = await database;
-    var res = await db?.rawQuery(
-        'SELECT SUM(amount) as totalInflow from Trosa WHERE isInflow="1"');
-    return res![0]['totalInflow'] != null ? res[0]['totalInflow'] : 0.0;
+    return db.update(tableTrosa, trosa.toMap(),
+        where: '$columnId = ?', whereArgs: [trosa.id]);
   }
 
-  Future totalOutflow() async {
-    print('Getting the outflow total');
+  /// Total amount still owed to the user across all inflow debts.
+  Future<double> totalInflow() async {
     final db = await database;
-    var res = await db?.rawQuery(
-        'SELECT SUM(amount) as totalOutflow from Trosa WHERE isInflow="0"');
-    return res![0]['totalOutflow'] != null ? res[0]['totalOutflow'] : 0.0;
+    final result = await db.rawQuery(_totalQuery(1));
+    final value = result.first['total'];
+    return value is num ? value.toDouble() : 0.0;
+  }
+
+  /// Total amount still owed by the user across all outflow debts.
+  Future<double> totalOutflow() async {
+    final db = await database;
+    final result = await db.rawQuery(_totalQuery(0));
+    final value = result.first['total'];
+    return value is num ? value.toDouble() : 0.0;
+  }
+
+  static String _totalQuery(int inflow) {
+    return '''
+SELECT SUM(CASE
+  WHEN $columnIsInflow = $inflow
+   AND CAST($columnAmount AS REAL) > CAST($columnPaidAmount AS REAL)
+  THEN CAST($columnAmount AS REAL) - CAST($columnPaidAmount AS REAL)
+  ELSE 0 END) as total
+FROM $tableTrosa''';
+  }
+
+  Future<String?> getSetting(String key) async {
+    final db = await database;
+    final rows = await db.query(_settingsTable,
+        columns: [_settingsColumnValue],
+        where: '$_settingsColumnKey = ?',
+        whereArgs: [key]);
+    if (rows.isEmpty) {
+      return null;
+    }
+    return rows.first[_settingsColumnValue] as String?;
+  }
+
+  Future<void> setSetting(String key, String value) async {
+    final db = await database;
+    await db.insert(_settingsTable,
+        {_settingsColumnKey: key, _settingsColumnValue: value},
+        conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  /// All persisted settings as a key/value map (used by the JSON backup).
+  Future<Map<String, String>> getAllSettings() async {
+    final db = await database;
+    final rows = await db.query(_settingsTable);
+    return <String, String>{
+      for (final row in rows)
+        if (row[_settingsColumnKey] != null &&
+            row[_settingsColumnValue] != null)
+          row[_settingsColumnKey] as String: row[_settingsColumnValue] as String,
+    };
+  }
+
+  /// Replaces every debt row with the given list (used by the JSON restore).
+  Future<void> replaceAllTrosa(List<Trosa> trosaList) async {
+    final db = await database;
+    await db.transaction((txn) async {
+      await txn.delete(tableTrosa);
+      for (final trosa in trosaList) {
+        final map = trosa.toMap();
+        if (trosa.id != null) {
+          map[columnId] = trosa.id;
+        }
+        await txn.insert(tableTrosa, map,
+            conflictAlgorithm: ConflictAlgorithm.replace);
+      }
+    });
   }
 }

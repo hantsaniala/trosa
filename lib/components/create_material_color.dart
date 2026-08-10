@@ -17,7 +17,9 @@ MaterialColor createMaterialColor(Color color) {
     0.9
   ];
   final Map<int, Color> swatch = <int, Color>{};
-  final int r = color.red, g = color.green, b = color.blue;
+  final int r = (color.r * 255).round();
+  final int g = (color.g * 255).round();
+  final int b = (color.b * 255).round();
 
   for (final double strength in strengths) {
     final double ds = 0.5 - strength;
@@ -29,5 +31,5 @@ MaterialColor createMaterialColor(Color color) {
     );
   }
 
-  return MaterialColor(color.value, swatch);
+  return MaterialColor(color.toARGB32(), swatch);
 }

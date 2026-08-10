@@ -1,0 +1,170 @@
+{
+  "@@locale": "en",
+  "appName": "Trosa",
+  "moneyToReceive": "Money to receive",
+  "moneyToPay": "Money to pay",
+  "balance": "Your balance",
+  "currencyPrefix": "{symbol} ",
+  "@currencyPrefix": {
+    "placeholders": {
+      "symbol": {
+        "type": "String"
+      }
+    }
+  },
+  "debtListTitle": "Debt list",
+  "addDebt": "Add debt",
+  "editDebt": "Edit debt",
+  "deleteDebtTitle": "Delete debt",
+  "deleteDebtMessage": "Are you sure you want to delete this debt?",
+  "no": "NO",
+  "yes": "YES",
+  "about": "About",
+  "stats": "Stats",
+  "settings": "Settings",
+  "sortByDate": "Date",
+  "sortByOwner": "Name",
+  "sortByAmount": "Amount",
+  "shareAppMessage": "Come and use {appUrl}",
+  "@shareAppMessage": {
+    "placeholders": {
+      "appUrl": {
+        "type": "String"
+      }
+    }
+  },
+  "searchHint": "Search (name, note, category)...",
+  "filterAll": "All",
+  "filterUnpaid": "Unpaid",
+  "filterPaid": "Paid",
+  "filterOverdue": "Overdue",
+  "paidBadge": "Paid",
+  "remainingLabel": "Left",
+  "remainingText": "Left {amount}",
+  "@remainingText": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "amountLabel": "Amount",
+  "currencySuffix": "{symbol}",
+  "@currencySuffix": {
+    "placeholders": {
+      "symbol": {
+        "type": "String"
+      }
+    }
+  },
+  "amountRequired": "Please enter an amount.",
+  "ownerLabel": "The person",
+  "ownerRequired": "Please enter the person's name.",
+  "dueDateLabel": "Due on ",
+  "noteLabel": "Note",
+  "paidAmountLabel": "Amount already paid",
+  "categoryLabel": "Category",
+  "noCategory": "No category",
+  "categoryFamily": "Family",
+  "categoryFriends": "Friends",
+  "categoryWork": "Work",
+  "categoryOther": "Other",
+  "recurringLabel": "Repeat every N days (0 = never)",
+  "aboutTitle": "About Trosa",
+  "aboutDescription": "App for keeping track of debts to pay and money to collect.",
+  "poweredBy": "Powered by",
+  "deletedSnackBar": "Debt deleted",
+  "undoAction": "UNDO",
+  "settingsTitle": "Settings",
+  "currencyLabel": "Currency",
+  "themeLabel": "Theme",
+  "themeSystem": "System",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "languageLabel": "Language",
+  "languageMg": "Malagasy",
+  "languageFr": "Français",
+  "languageEn": "English",
+  "backupExport": "Export CSV",
+  "backupImport": "Import CSV",
+  "backupImported": "{count} debts imported",
+  "@backupImported": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupFailed": "Export failed",
+  "jsonExport": "Export JSON",
+  "jsonImport": "Import JSON",
+  "jsonImported": "{count} debts and settings restored",
+  "@jsonImported": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationBody": "{owner}'s debt must be repaid",
+  "@notificationBody": {
+    "placeholders": {
+      "owner": {
+        "type": "String"
+      }
+    }
+  },
+  "statsTitle": "Statistics",
+  "statsTotal": "All debts",
+  "statsPaid": "Paid",
+  "statsOutstanding": "Outstanding",
+  "statsMonthly": "Monthly amounts",
+  "statsTopOwners": "Top debtors",
+  "statsEmpty": "No debts recorded yet.",
+  "statsTrend": "Balance over time",
+  "statsShare": "Share report",
+  "reminderSection": "Reminders",
+  "reminderEnabledLabel": "Enable reminder",
+  "reminderLeadLabel": "Before due date",
+  "reminderLeadSameDay": "Same day",
+  "reminderLeadOneDay": "1 day before",
+  "reminderLeadTwoDays": "2 days before",
+  "reminderLeadOneWeek": "1 week before",
+  "reminderTimeLabel": "Reminder time",
+  "paymentDialogTitle": "Record a payment",
+  "paymentHint": "How much was paid?",
+  "paymentRecorded": "Payment recorded",
+  "recordPaymentAction": "Record a payment",
+  "markPaidAction": "Mark as paid",
+  "editAction": "Edit",
+  "settledLabel": "Paid on {date}",
+  "@settledLabel": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "progressPaid": "Paid {percent}%",
+  "@progressPaid": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "addCategory": "New category",
+  "newCategoryHint": "Category name",
+  "categoryAdded": "Category added",
+  "categoryExists": "This category already exists",
+  "contactLabel": "Pick from phone contacts",
+  "onboardingTitle1": "Welcome to Trosa",
+  "onboardingBody1": "Track money people owe you and what you owe, all in one place.",
+  "onboardingTitle2": "Money in and out",
+  "onboardingBody2": "See what's due to you, what you owe, and your balance at a glance.",
+  "onboardingTitle3": "Gestures",
+  "onboardingBody3": "Swipe left to delete, right to mark paid. Tap a debt to record a payment.",
+  "onboardingSkip": "Skip",
+  "onboardingNext": "Next",
+  "onboardingStart": "Get started"
+}
