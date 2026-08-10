@@ -1,6 +1,10 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:trosa/components/owner_avatar.dart';
 import 'package:trosa/db/sqflite_provider.dart';
 import 'package:trosa/l10n/app_localizations.dart';
 import 'package:trosa/models/trosa.dart';
@@ -42,6 +46,13 @@ class _TrosaStatsScreenState extends State<TrosaStatsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.stats),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.share),
+            tooltip: l10n.statsShare,
+            onPressed: () => _shareReport(context, l10n, symbol),
+          ),
+        ],
       ),
       body: _debts.isEmpty
           ? Center(child: Text(l10n.statsEmpty))
@@ -54,10 +65,48 @@ class _TrosaStatsScreenState extends State<TrosaStatsScreen> {
                   const SizedBox(height: 24),
                   _monthlySection(context, l10n, symbol),
                   const SizedBox(height: 24),
+                  _trendSection(context, l10n, symbol),
+                  const SizedBox(height: 24),
                   _topOwnersSection(context, l10n, symbol),
                 ],
               ),
             ),
+    );
+  }
+
+  Future<void> _shareReport(
+      BuildContext context, AppLocalizations l10n, String symbol) async {
+    final paid = _debts.where((t) => t.isPaid).length;
+    final outstanding = _debts.length - paid;
+
+    final byOwner = <String, double>{};
+    for (final t in _debts) {
+      if (t.owner.trim().isEmpty || t.remaining <= 0) continue;
+      byOwner[t.owner] = (byOwner[t.owner] ?? 0) + t.remaining;
+    }
+    final sorted = byOwner.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+
+    final buffer = StringBuffer()
+      ..writeln('${l10n.appName} — ${l10n.stats}')
+      ..writeln('${l10n.statsTotal}: ${_debts.length}')
+      ..writeln('${l10n.statsPaid}: $paid')
+      ..writeln('${l10n.statsOutstanding}: $outstanding');
+    if (sorted.isNotEmpty) {
+      buffer.writeln('${l10n.statsTopOwners}:');
+      for (final entry in sorted.take(5)) {
+        buffer.writeln(
+            '  • ${entry.key}: ${l10n.currencyPrefix(symbol)}${_formatter.format(entry.value)}');
+      }
+    }
+
+    final box = context.findRenderObject() as RenderBox?;
+    await SharePlus.instance.share(
+      ShareParams(
+        text: buffer.toString(),
+        sharePositionOrigin:
+            box != null ? box.localToGlobal(Offset.zero) & box.size : null,
+      ),
     );
   }
 
@@ -179,6 +228,63 @@ class _TrosaStatsScreenState extends State<TrosaStatsScreen> {
     );
   }
 
+  /// Cumulative balance-over-time line chart: the running balance after each
+  /// month, showing progress (e.g. "down 200,000 since January").
+  Widget _trendSection(
+      BuildContext context, AppLocalizations l10n, String symbol) {
+    final now = DateTime.now();
+    final months = <DateTime>[
+      for (var i = 5; i >= 0; i--)
+        DateTime(now.year, now.month - i, 1),
+    ];
+
+    // Running balance: sum outstanding net per month of creation.
+    final values = <double>[];
+    var running = 0.0;
+    for (final m in months) {
+      for (final t in _debts) {
+        if (DateTime(t.date.year, t.date.month, 1) == m) {
+          running += t.isInflow ? t.remaining : -t.remaining;
+        }
+      }
+      values.add(running);
+    }
+
+    final maxAbs = values
+        .map((v) => v.abs())
+        .fold<double>(0, (a, b) => a > b ? a : b);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(l10n.statsTrend, style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 150,
+          child: CustomPaint(
+            size: const Size(double.infinity, 150),
+            painter: _TrendPainter(
+              values: values,
+              labels: months.map(_monthFormat.format).toList(),
+              maxAbs: maxAbs,
+              color: Theme.of(context).colorScheme.primary,
+              gridColor: Theme.of(context).colorScheme.outlineVariant,
+              textColor: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          '${l10n.currencyPrefix(symbol)}${_formatter.format(values.last)}',
+          style: Theme.of(context)
+              .textTheme
+              .titleMedium
+              ?.copyWith(fontWeight: FontWeight.w700),
+        ),
+      ],
+    );
+  }
+
   Widget _topOwnersSection(
       BuildContext context, AppLocalizations l10n, String symbol) {
     final byOwner = <String, double>{};
@@ -201,9 +307,7 @@ class _TrosaStatsScreenState extends State<TrosaStatsScreen> {
             ListTile(
               dense: true,
               contentPadding: EdgeInsets.zero,
-              leading: CircleAvatar(
-                child: Text(entry.key.characters.first.toUpperCase()),
-              ),
+              leading: OwnerAvatar(owner: entry.key, size: 38, fontSize: 15),
               title: Text(entry.key),
               trailing: Text(
                 '${l10n.currencyPrefix(symbol)}${_formatter.format(entry.value)}',
@@ -213,4 +317,88 @@ class _TrosaStatsScreenState extends State<TrosaStatsScreen> {
       ],
     );
   }
+}
+
+/// Lightweight line chart for the cumulative balance trend. No chart package
+/// needed — a simple polyline with dots and month labels.
+class _TrendPainter extends CustomPainter {
+  final List<double> values;
+  final List<String> labels;
+  final double maxAbs;
+  final Color color;
+  final Color gridColor;
+  final Color textColor;
+
+  _TrendPainter({
+    required this.values,
+    required this.labels,
+    required this.maxAbs,
+    required this.color,
+    required this.gridColor,
+    required this.textColor,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (values.isEmpty || maxAbs == 0) return;
+
+    const topPad = 8.0;
+    const bottomPad = 22.0;
+    const sidePad = 6.0;
+    final chartH = size.height - topPad - bottomPad;
+    final chartW = size.width - sidePad * 2;
+
+    double xFor(int i) =>
+        sidePad + (values.length == 1 ? chartW / 2 : chartW * i / (values.length - 1));
+    double yFor(double v) =>
+        topPad + chartH - ((v + maxAbs) / (2 * maxAbs)) * chartH;
+
+    // Zero line + mid grid.
+    final gridPaint = Paint()
+      ..color = gridColor.withValues(alpha: 0.4)
+      ..strokeWidth = 1;
+    final zeroY = yFor(0);
+    canvas.drawLine(Offset(sidePad, zeroY), Offset(size.width - sidePad, zeroY), gridPaint);
+
+    // Polyline.
+    final linePaint = Paint()
+      ..color = color
+      ..strokeWidth = 2.4
+      ..style = PaintingStyle.stroke
+      ..strokeJoin = StrokeJoin.round
+      ..strokeCap = StrokeCap.round;
+    final path = Path();
+    for (var i = 0; i < values.length; i++) {
+      final x = xFor(i);
+      final y = yFor(values[i]);
+      if (i == 0) {
+        path.moveTo(x, y);
+      } else {
+        path.lineTo(x, y);
+      }
+    }
+    canvas.drawPath(path, linePaint);
+
+    // Dots + labels.
+    final dotPaint = Paint()..color = color;
+    for (var i = 0; i < values.length; i++) {
+      final x = xFor(i);
+      final y = yFor(values[i]);
+      canvas.drawCircle(Offset(x, y), 3, dotPaint);
+      final tp = TextPainter(
+        text: TextSpan(
+          text: labels[i],
+          style: TextStyle(fontSize: 10, color: textColor),
+        ),
+        textDirection: ui.TextDirection.ltr,
+      )..layout();
+      tp.paint(canvas, Offset(x - tp.width / 2, size.height - bottomPad + 4));
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _TrendPainter oldDelegate) =>
+      oldDelegate.values != values ||
+      oldDelegate.maxAbs != maxAbs ||
+      oldDelegate.color != color;
 }
