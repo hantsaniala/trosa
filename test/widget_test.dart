@@ -20,6 +20,9 @@ void main() {
 
   setUp(() async {
     await clearDatabase();
+    // Skip the first-run onboarding so existing dashboard tests land on the
+    // dashboard (the onboarding flow has its own dedicated test).
+    await DatabaseProvider.db.setSetting('onboardingDone', 'true');
   });
 
   Future<void> addDebt(WidgetTester tester, String amount, String owner) async {
@@ -140,5 +143,63 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.textContaining('Jean'), findsOneWidget);
+  });
+
+  testWidgets('first run shows onboarding and finishing reaches the dashboard',
+      (tester) async {
+    // Remove the onboarding-done flag so the app boots into onboarding.
+    final db = await DatabaseProvider.db.database;
+    await db.delete('settings');
+    await tester.pumpWidget(const TrosaApp());
+    await tester.pumpAndSettle();
+
+    // First slide.
+    expect(find.text('Tongasoa eto amin\'ny Trosa'), findsOneWidget);
+    await tester.tap(find.text('Manaraka'));
+    await tester.pumpAndSettle();
+    // Second slide.
+    expect(find.text('Vola miditra sy mivoaka'), findsOneWidget);
+    await tester.tap(find.text('Manaraka'));
+    await tester.pumpAndSettle();
+    // Third slide -> start.
+    expect(find.text('Fikafiky ny tanana'), findsOneWidget);
+    await tester.tap(find.text('Manomboka'));
+    await tester.pumpAndSettle();
+    await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 200)));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Vola ho raisina'), findsOneWidget);
+  });
+
+  testWidgets('recording a partial payment updates the amount shown',
+      (tester) async {
+    await tester.pumpWidget(const TrosaApp());
+    await tester.pumpAndSettle();
+
+    await addDebt(tester, '10000', 'Jean');
+
+    // Tap the card to open the quick actions sheet, then record a payment.
+    await tester.tap(find.textContaining('Jean').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Rekordera fandoavana'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField).last, '4000');
+    await tester.tap(find.text('ENY'));
+    await tester.pumpAndSettle();
+    await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 200)));
+    await tester.pumpAndSettle();
+
+    // The fr-locale NumberFormat separates thousands with a narrow no-break
+    // space (U+202F), so match any whitespace between the digits.
+    // "Sisa 6 000" with any whitespace between digits (fr format uses U+202F).
+    final sisaFinder = find.byWidgetPredicate((widget) {
+      if (widget is! Text) return false;
+      final text = (widget.data ?? '').replaceAll(RegExp(r'\s'), '');
+      return text.contains('Sisa6000');
+    });
+    expect(sisaFinder, findsOneWidget);
   });
 }

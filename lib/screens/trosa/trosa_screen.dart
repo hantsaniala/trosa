@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:trosa/api/trosa_api.dart';
+import 'package:trosa/components/currency_input_formatter.dart';
 import 'package:trosa/db/sqflite_provider.dart';
 import 'package:trosa/l10n/app_localizations.dart';
 import 'package:trosa/models/trosa.dart';
@@ -157,13 +159,126 @@ class _TrosaPageState extends State<TrosaPage> {
     // Dismissible requires the item to leave the tree; remove it now and let
     // the reload bring it back with the new state.
     notifier.removeCurrent(trosa);
-    trosa.paidAmount = trosa.isPaid ? 0 : trosa.amount;
+    final nowPaid = !trosa.isPaid;
+    trosa.paidAmount = nowPaid ? trosa.amount : 0;
+    trosa.paidDate = nowPaid ? DateTime.now() : null;
     await DatabaseProvider.db.update(trosa);
-    if (trosa.isPaid) {
+    if (nowPaid) {
       await NotificationService.instance.cancel(trosa.id ?? -1);
     }
     await _reload(notifier);
     _rescheduleNotifications();
+  }
+
+  /// Records a partial payment: adds to paidAmount and settles the debt (with
+  /// the settle date) when the full amount is covered.
+  Future<void> _recordPayment(Trosa trosa) async {
+    final l10n = AppLocalizations.of(context);
+    final settings = Provider.of<SettingsNotifier>(context, listen: false);
+    final controller = TextEditingController(
+      text: trosa.remaining > 0 ? _formatter.format(trosa.remaining) : '',
+    );
+
+    final amount = await showDialog<double>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(l10n.paymentDialogTitle),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            keyboardType: TextInputType.number,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              CurrencyInputFormatter(),
+            ],
+            textAlign: TextAlign.end,
+            decoration: InputDecoration(
+              labelText: l10n.paymentHint,
+              suffixText: l10n.currencySuffix(settings.currencySymbol),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(l10n.no),
+            ),
+            TextButton(
+              onPressed: () {
+                final digits =
+                    controller.text.replaceAll(RegExp(r'[^\d]'), '');
+                Navigator.pop(dialogContext, double.tryParse(digits) ?? 0);
+              },
+              child: Text(l10n.yes),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (amount == null || amount <= 0) return;
+    if (!mounted) return;
+
+    final notifier = Provider.of<TrosaNotifier>(context, listen: false);
+    trosa.paidAmount = (trosa.paidAmount + amount).clamp(0.0, trosa.amount);
+    final fullyPaid = trosa.paidAmount >= trosa.amount;
+    trosa.paidDate = fullyPaid ? DateTime.now() : null;
+    await DatabaseProvider.db.update(trosa);
+    if (fullyPaid) {
+      await NotificationService.instance.cancel(trosa.id ?? -1);
+    }
+    await _reload(notifier);
+    _rescheduleNotifications();
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(l10n.paymentRecorded)));
+  }
+
+  /// Shows the quick actions for a debt: record a payment, mark as paid or
+  /// edit. Triggered by tapping a card.
+  void _showCardActions(Trosa trosa) {
+    final l10n = AppLocalizations.of(context);
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.payments),
+                title: Text(l10n.recordPaymentAction),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  _recordPayment(trosa);
+                },
+              ),
+              if (!trosa.isPaid)
+                ListTile(
+                  leading: const Icon(Icons.check_circle_outline),
+                  title: Text(l10n.markPaidAction),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _togglePaid(trosa);
+                  },
+                ),
+              ListTile(
+                leading: const Icon(Icons.edit),
+                title: Text(l10n.editAction),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  Provider.of<TrosaNotifier>(context, listen: false)
+                      .currentTrosa = trosa;
+                  _gotoAddPage();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   void _applyView(TrosaNotifier notifier) {
@@ -188,6 +303,15 @@ class _TrosaPageState extends State<TrosaPage> {
 
   void _applySort(TrosaNotifier notifier) {
     final list = notifier.currentTrosaList;
+    // Paid archive: show recently settled debts first.
+    if (_statusFilter == StatusFilter.paid) {
+      list.sort((a, b) {
+        final da = a.paidDate ?? a.date;
+        final db = b.paidDate ?? b.date;
+        return db.compareTo(da);
+      });
+      return;
+    }
     switch (notifier.sortType) {
       case 'amount':
         list.sort((a, b) => notifier.sortAscend
@@ -252,7 +376,9 @@ class _TrosaPageState extends State<TrosaPage> {
   void _showSettingsDialog() {
     showDialog<void>(
       context: context,
-      builder: (context) => const TrosaSettingsDialog(),
+      builder: (context) => TrosaSettingsDialog(
+        onDataChanged: _refreshList,
+      ),
     );
   }
 
@@ -278,14 +404,29 @@ class _TrosaPageState extends State<TrosaPage> {
     final settings = Provider.of<SettingsNotifier>(context);
     final symbol = settings.currencySymbol;
 
-    // Note: no Provider.of<TrosaNotifier> here on purpose. Each piece that
-    // depends on debt data is wrapped in its own Consumer below, so a
-    // notification (e.g. every search keystroke) rebuilds only the list and
-    // summary instead of the whole page — a real win on old GPUs.
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.appName),
         actions: <Widget>[
+          IconButton(
+            icon: Icon(
+              Theme.of(context).brightness == Brightness.dark
+                  ? Icons.light_mode
+                  : Icons.dark_mode,
+            ),
+            tooltip: Theme.of(context).brightness == Brightness.dark
+                ? l10n.themeLight
+                : l10n.themeDark,
+            onPressed: () {
+              final settings =
+                  Provider.of<SettingsNotifier>(context, listen: false);
+              settings.setThemeMode(
+                Theme.of(context).brightness == Brightness.dark
+                    ? ThemeMode.light
+                    : ThemeMode.dark,
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.share),
             onPressed: _shareApp,
@@ -423,8 +564,6 @@ class _TrosaPageState extends State<TrosaPage> {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                // Consumer keeps the chips in sync when the filter changes;
-                // _filterChip reads the State's _statusFilter at build time.
                 child: Consumer<TrosaNotifier>(
                   builder: (context, _, __) {
                     return Row(
@@ -489,7 +628,7 @@ class _TrosaPageState extends State<TrosaPage> {
                     return ListView.builder(
                       shrinkWrap: true,
                       itemCount: notifier.currentTrosaList.length,
-                      itemExtent: 88,
+                      itemExtent: 96,
                       itemBuilder: (context, index) {
                         final trosa = notifier.currentTrosaList[index];
                         return Dismissible(
@@ -527,16 +666,15 @@ class _TrosaPageState extends State<TrosaPage> {
                             ),
                           ),
                           child: GestureDetector(
-                            onTap: () {
-                              notifier.currentTrosa = trosa;
-                              _gotoAddPage();
-                            },
+                            onTap: () => _showCardActions(trosa),
                             child: Padding(
                               padding: const EdgeInsets.only(
                                   left: 5, right: 5, top: 2, bottom: 0),
                               child: TrosaCard(
                                 isInflow: trosa.isInflow,
                                 amount: _formatter.format(trosa.amount),
+                                remaining:
+                                    _formatter.format(trosa.remaining),
                                 owner: trosa.owner,
                                 dueDate: _dateFormat.format(trosa.dueDate),
                                 date: _dateFormat.format(trosa.date),
@@ -545,8 +683,13 @@ class _TrosaPageState extends State<TrosaPage> {
                                 isOverdue: trosa.isOverdue,
                                 isDueSoon: trosa.isDueSoon,
                                 paidAmount: trosa.paidAmount,
+                                paidPercent: trosa.paidPercent,
                                 category: trosa.category,
                                 symbol: symbol,
+                                settledDate: trosa.isPaid &&
+                                        trosa.paidDate != null
+                                    ? _dateFormat.format(trosa.paidDate!)
+                                    : null,
                               ),
                             ),
                           ),
@@ -573,11 +716,19 @@ class _TrosaPageState extends State<TrosaPage> {
   }
 
   Widget _filterChip(String label, StatusFilter filter) {
+    final scheme = Theme.of(context).colorScheme;
+    final bool selected = _statusFilter == filter;
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: ChoiceChip(
-        label: Text(label),
-        selected: _statusFilter == filter,
+        label: Text(
+          label,
+          style: TextStyle(
+            color: selected ? scheme.onPrimary : scheme.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        selected: selected,
         onSelected: (_) => _onFilterChanged(filter),
       ),
     );
