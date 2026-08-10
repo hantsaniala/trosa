@@ -15,6 +15,10 @@ class Trosa {
   double paidAmount;
   String category;
   int recurringDays;
+  DateTime? paidDate;
+  bool reminderEnabled;
+  int reminderDaysBefore;
+  int reminderTimeMinutes;
 
   Trosa({
     this.id,
@@ -27,8 +31,16 @@ class Trosa {
     this.paidAmount = 0,
     this.category = '',
     this.recurringDays = 0,
+    this.paidDate,
+    this.reminderEnabled = true,
+    this.reminderDaysBefore = 1,
+    this.reminderTimeMinutes = 540,
   })  : date = date ?? DateTime.now(),
         dueDate = dueDate ?? DateTime.now();
+
+  /// Percent of the amount already paid (0..100).
+  int get paidPercent =>
+      amount <= 0 ? 0 : ((paidAmount / amount) * 100).round().clamp(0, 100);
 
   /// Amount still owed (never negative).
   double get remaining {
@@ -59,6 +71,10 @@ class Trosa {
       DatabaseProvider.columnPaidAmount: paidAmount,
       DatabaseProvider.columnCategory: category,
       DatabaseProvider.columnRecurringDays: recurringDays,
+      DatabaseProvider.columnPaidDate: paidDate?.toIso8601String(),
+      DatabaseProvider.columnReminderEnabled: reminderEnabled ? 1 : 0,
+      DatabaseProvider.columnReminderDaysBefore: reminderDaysBefore,
+      DatabaseProvider.columnReminderTimeMinutes: reminderTimeMinutes,
     };
   }
 
@@ -80,6 +96,16 @@ class Trosa {
       recurringDays: int.tryParse(
               data[DatabaseProvider.columnRecurringDays]?.toString() ?? '') ??
           0,
+      paidDate: _parseNullableDate(data[DatabaseProvider.columnPaidDate]),
+      reminderEnabled: data[DatabaseProvider.columnReminderEnabled] != 0,
+      reminderDaysBefore: int.tryParse(data[DatabaseProvider.columnReminderDaysBefore]
+              ?.toString() ??
+          '') ??
+          1,
+      reminderTimeMinutes: int.tryParse(
+              data[DatabaseProvider.columnReminderTimeMinutes]?.toString() ??
+                  '') ??
+          540,
     );
   }
 
@@ -88,5 +114,11 @@ class Trosa {
   static DateTime _parseDate(dynamic value) {
     final parsed = DateTime.tryParse(value?.toString() ?? '');
     return parsed ?? DateTime.now();
+  }
+
+  /// Parses a nullable date string (e.g. `paidDate`), null when absent.
+  static DateTime? _parseNullableDate(dynamic value) {
+    if (value == null) return null;
+    return DateTime.tryParse(value.toString());
   }
 }

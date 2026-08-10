@@ -14,12 +14,16 @@ class DatabaseProvider {
   static const String columnPaidAmount = 'paidAmount';
   static const String columnCategory = 'category';
   static const String columnRecurringDays = 'recurringDays';
+  static const String columnPaidDate = 'paidDate';
+  static const String columnReminderEnabled = 'reminderEnabled';
+  static const String columnReminderDaysBefore = 'reminderDaysBefore';
+  static const String columnReminderTimeMinutes = 'reminderTimeMinutes';
 
   static const String _settingsTable = 'settings';
   static const String _settingsColumnKey = 'key';
   static const String _settingsColumnValue = 'value';
 
-  static const int _databaseVersion = 3;
+  static const int _databaseVersion = 4;
 
   static const String _createTableSql = '''
 CREATE TABLE $tableTrosa (
@@ -32,7 +36,11 @@ CREATE TABLE $tableTrosa (
   $columnNote TEXT,
   $columnPaidAmount TEXT NOT NULL DEFAULT '0',
   $columnCategory TEXT NOT NULL DEFAULT '',
-  $columnRecurringDays INTEGER NOT NULL DEFAULT 0
+  $columnRecurringDays INTEGER NOT NULL DEFAULT 0,
+  $columnPaidDate TEXT,
+  $columnReminderEnabled INTEGER NOT NULL DEFAULT 1,
+  $columnReminderDaysBefore INTEGER NOT NULL DEFAULT 1,
+  $columnReminderTimeMinutes INTEGER NOT NULL DEFAULT 540
 )''';
 
   static const String _createSettingsTableSql = '''
@@ -49,6 +57,14 @@ CREATE TABLE $_settingsTable (
       "ALTER TABLE $tableTrosa ADD COLUMN $columnCategory TEXT NOT NULL DEFAULT ''";
   static const String _addRecurringDaysColumnSql =
       'ALTER TABLE $tableTrosa ADD COLUMN $columnRecurringDays INTEGER NOT NULL DEFAULT 0';
+  static const String _addPaidDateColumnSql =
+      'ALTER TABLE $tableTrosa ADD COLUMN $columnPaidDate TEXT';
+  static const String _addReminderEnabledColumnSql =
+      'ALTER TABLE $tableTrosa ADD COLUMN $columnReminderEnabled INTEGER NOT NULL DEFAULT 1';
+  static const String _addReminderDaysBeforeColumnSql =
+      'ALTER TABLE $tableTrosa ADD COLUMN $columnReminderDaysBefore INTEGER NOT NULL DEFAULT 1';
+  static const String _addReminderTimeMinutesColumnSql =
+      'ALTER TABLE $tableTrosa ADD COLUMN $columnReminderTimeMinutes INTEGER NOT NULL DEFAULT 540';
 
   DatabaseProvider._();
   static final DatabaseProvider db = DatabaseProvider._();
@@ -88,6 +104,12 @@ CREATE TABLE $_settingsTable (
           await db.execute(_addCategoryColumnSql);
           await db.execute(_addRecurringDaysColumnSql);
           await db.execute(_createSettingsTableSql);
+        }
+        if (oldVersion < 4) {
+          await db.execute(_addPaidDateColumnSql);
+          await db.execute(_addReminderEnabledColumnSql);
+          await db.execute(_addReminderDaysBeforeColumnSql);
+          await db.execute(_addReminderTimeMinutesColumnSql);
         }
       },
     );
@@ -173,5 +195,33 @@ FROM $tableTrosa''';
     await db.insert(_settingsTable,
         {_settingsColumnKey: key, _settingsColumnValue: value},
         conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  /// All persisted settings as a key/value map (used by the JSON backup).
+  Future<Map<String, String>> getAllSettings() async {
+    final db = await database;
+    final rows = await db.query(_settingsTable);
+    return <String, String>{
+      for (final row in rows)
+        if (row[_settingsColumnKey] != null &&
+            row[_settingsColumnValue] != null)
+          row[_settingsColumnKey] as String: row[_settingsColumnValue] as String,
+    };
+  }
+
+  /// Replaces every debt row with the given list (used by the JSON restore).
+  Future<void> replaceAllTrosa(List<Trosa> trosaList) async {
+    final db = await database;
+    await db.transaction((txn) async {
+      await txn.delete(tableTrosa);
+      for (final trosa in trosaList) {
+        final map = trosa.toMap();
+        if (trosa.id != null) {
+          map[columnId] = trosa.id;
+        }
+        await txn.insert(tableTrosa, map,
+            conflictAlgorithm: ConflictAlgorithm.replace);
+      }
+    });
   }
 }

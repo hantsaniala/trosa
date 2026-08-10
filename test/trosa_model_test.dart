@@ -15,6 +15,10 @@ void main() {
         paidAmount: 3000,
         category: 'Namana',
         recurringDays: 30,
+        paidDate: DateTime(2026, 2, 3),
+        reminderEnabled: false,
+        reminderDaysBefore: 7,
+        reminderTimeMinutes: 480,
       );
 
       final map = trosa.toMap();
@@ -28,6 +32,10 @@ void main() {
       expect(map[DatabaseProvider.columnRecurringDays], 30);
       expect(map[DatabaseProvider.columnDate], '2026-01-05T10:30:00.000');
       expect(map[DatabaseProvider.columnDueDate], '2026-02-01T00:00:00.000');
+      expect(map[DatabaseProvider.columnPaidDate], '2026-02-03T00:00:00.000');
+      expect(map[DatabaseProvider.columnReminderEnabled], 0);
+      expect(map[DatabaseProvider.columnReminderDaysBefore], 7);
+      expect(map[DatabaseProvider.columnReminderTimeMinutes], 480);
     });
 
     test('fromMap parses stored rows back into a Trosa', () {
@@ -146,6 +154,10 @@ void main() {
         paidAmount: 500,
         category: 'Fianakaviana',
         recurringDays: 0,
+        paidDate: DateTime(2026, 6, 1),
+        reminderEnabled: false,
+        reminderDaysBefore: 2,
+        reminderTimeMinutes: 600,
       );
 
       final copy = Trosa.fromMap(original.toMap()..[DatabaseProvider.columnId] = 42);
@@ -160,6 +172,32 @@ void main() {
       expect(copy.paidAmount, original.paidAmount);
       expect(copy.category, original.category);
       expect(copy.recurringDays, original.recurringDays);
+      expect(copy.paidDate, original.paidDate);
+      expect(copy.reminderEnabled, original.reminderEnabled);
+      expect(copy.reminderDaysBefore, original.reminderDaysBefore);
+      expect(copy.reminderTimeMinutes, original.reminderTimeMinutes);
+    });
+
+    test('legacy rows without new columns fall back to defaults', () {
+      final trosa = Trosa.fromMap(<String, dynamic>{
+        DatabaseProvider.columnAmount: '1000',
+        DatabaseProvider.columnOwner: 'Jean',
+        DatabaseProvider.columnDate: '2026-01-05T10:30:00.000',
+        DatabaseProvider.columnDueDate: '2026-02-01T00:00:00.000',
+        DatabaseProvider.columnIsInflow: 1,
+      });
+
+      expect(trosa.paidDate, isNull);
+      expect(trosa.reminderEnabled, isTrue);
+      expect(trosa.reminderDaysBefore, 1);
+      expect(trosa.reminderTimeMinutes, 540);
+    });
+
+    test('paidPercent reflects partial payments', () {
+      expect(Trosa(amount: 10000, paidAmount: 3000).paidPercent, 30);
+      expect(Trosa(amount: 10000, paidAmount: 10000).paidPercent, 100);
+      expect(Trosa(amount: 10000, paidAmount: 0).paidPercent, 0);
+      expect(Trosa(amount: 0).paidPercent, 0);
     });
   });
 }
