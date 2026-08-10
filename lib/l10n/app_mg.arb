@@ -81,6 +81,10 @@
   "themeSystem": "Araka ny rafitra",
   "themeLight": "Mazava",
   "themeDark": "Maizina",
+  "languageLabel": "Fiteny",
+  "languageMg": "Malagasy",
+  "languageFr": "Français",
+  "languageEn": "English",
   "backupExport": "Export CSV",
   "backupImport": "Import CSV",
   "backupImported": "Trosa {count} no nampidirina",
@@ -92,6 +96,16 @@
     }
   },
   "backupFailed": "Tsy nahomby ny fanondranana",
+  "jsonExport": "Export JSON",
+  "jsonImport": "Import JSON",
+  "jsonImported": "Trosa {count} sy ny fikirana no naverina",
+  "@jsonImported": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "notificationBody": "Tsy maintsy haverina ny trosa ho an'i {owner}",
   "@notificationBody": {
     "placeholders": {
@@ -106,5 +120,51 @@
   "statsOutstanding": "Mbola misy sisa",
   "statsMonthly": "Vola isam-bolana",
   "statsTopOwners": "Tompon-trosa ambony indrindra",
-  "statsEmpty": "Mbola tsy misy trosa voasoratra."
+  "statsEmpty": "Mbola tsy misy trosa voasoratra.",
+  "statsTrend": "Fivoaran'ny toe-bolanao",
+  "statsShare": "Hizara tatitra",
+  "reminderSection": "Fampahatsiahivana",
+  "reminderEnabledLabel": "Alefa ny fampahatsiahivana",
+  "reminderLeadLabel": "Alohan'ny andro haverina",
+  "reminderLeadSameDay": "Andro iray ihany",
+  "reminderLeadOneDay": "Andro 1 aloha",
+  "reminderLeadTwoDays": "Andro 2 aloha",
+  "reminderLeadOneWeek": "Herinandro 1 aloha",
+  "reminderTimeLabel": "Ora fampahatsiahivana",
+  "paymentDialogTitle": "Rekordera fandoavana",
+  "paymentHint": "Ohatrinona no voaloa?",
+  "paymentRecorded": "Voarakitra ny fandoavana",
+  "recordPaymentAction": "Rekordera fandoavana",
+  "markPaidAction": "Marika ho voaloa",
+  "editAction": "Hanova",
+  "settledLabel": "Voaloa tamin'ny {date}",
+  "@settledLabel": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "progressPaid": "Voaloa {percent}%",
+  "@progressPaid": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "addCategory": "Sokajy vaovao",
+  "newCategoryHint": "Anaran'ny sokajy",
+  "categoryAdded": "Nampidirina ny sokajy",
+  "categoryExists": "Efa misy io sokajy io",
+  "contactLabel": "Misafidy olona amin'ny finday",
+  "onboardingTitle1": "Tongasoa eto amin'ny Trosa",
+  "onboardingBody1": "Raketo ireo vola trosain'ny olona aminao sy ny trosanao amin'ny olona, ao amin'ny toerana iray.",
+  "onboardingTitle2": "Vola miditra sy mivoaka",
+  "onboardingBody2": "Asehona ny vola tokony horaisina sy ny vola tokony haloa, miaraka amin'ny toe-bolanao.",
+  "onboardingTitle3": "Fikafiky ny tanana",
+  "onboardingBody3": "Swipe miankavia hamafa, miankavanana hanamarika voaloa. Tsindrio ny trosa iray hisafidianana fandoavana.",
+  "onboardingSkip": "Atsaharo",
+  "onboardingNext": "Manaraka",
+  "onboardingStart": "Manomboka"
 }

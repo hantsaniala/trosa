@@ -178,6 +178,18 @@ class AppLocalizationsMg extends AppLocalizations {
   String get themeDark => 'Maizina';
 
   @override
+  String get languageLabel => 'Fiteny';
+
+  @override
+  String get languageMg => 'Malagasy';
+
+  @override
+  String get languageFr => 'Français';
+
+  @override
+  String get languageEn => 'English';
+
+  @override
   String get backupExport => 'Export CSV';
 
   @override
@@ -190,6 +202,17 @@ class AppLocalizationsMg extends AppLocalizations {
 
   @override
   String get backupFailed => 'Tsy nahomby ny fanondranana';
+
+  @override
+  String get jsonExport => 'Export JSON';
+
+  @override
+  String get jsonImport => 'Import JSON';
+
+  @override
+  String jsonImported(int count) {
+    return 'Trosa $count sy ny fikirana no naverina';
+  }
 
   @override
   String notificationBody(String owner) {
@@ -216,4 +239,107 @@ class AppLocalizationsMg extends AppLocalizations {
 
   @override
   String get statsEmpty => 'Mbola tsy misy trosa voasoratra.';
+
+  @override
+  String get statsTrend => 'Fivoaran\'ny toe-bolanao';
+
+  @override
+  String get statsShare => 'Hizara tatitra';
+
+  @override
+  String get reminderSection => 'Fampahatsiahivana';
+
+  @override
+  String get reminderEnabledLabel => 'Alefa ny fampahatsiahivana';
+
+  @override
+  String get reminderLeadLabel => 'Alohan\'ny andro haverina';
+
+  @override
+  String get reminderLeadSameDay => 'Andro iray ihany';
+
+  @override
+  String get reminderLeadOneDay => 'Andro 1 aloha';
+
+  @override
+  String get reminderLeadTwoDays => 'Andro 2 aloha';
+
+  @override
+  String get reminderLeadOneWeek => 'Herinandro 1 aloha';
+
+  @override
+  String get reminderTimeLabel => 'Ora fampahatsiahivana';
+
+  @override
+  String get paymentDialogTitle => 'Rekordera fandoavana';
+
+  @override
+  String get paymentHint => 'Ohatrinona no voaloa?';
+
+  @override
+  String get paymentRecorded => 'Voarakitra ny fandoavana';
+
+  @override
+  String get recordPaymentAction => 'Rekordera fandoavana';
+
+  @override
+  String get markPaidAction => 'Marika ho voaloa';
+
+  @override
+  String get editAction => 'Hanova';
+
+  @override
+  String settledLabel(String date) {
+    return 'Voaloa tamin\'ny $date';
+  }
+
+  @override
+  String progressPaid(int percent) {
+    return 'Voaloa $percent%';
+  }
+
+  @override
+  String get addCategory => 'Sokajy vaovao';
+
+  @override
+  String get newCategoryHint => 'Anaran\'ny sokajy';
+
+  @override
+  String get categoryAdded => 'Nampidirina ny sokajy';
+
+  @override
+  String get categoryExists => 'Efa misy io sokajy io';
+
+  @override
+  String get contactLabel => 'Misafidy olona amin\'ny finday';
+
+  @override
+  String get onboardingTitle1 => 'Tongasoa eto amin\'ny Trosa';
+
+  @override
+  String get onboardingBody1 =>
+      'Raketo ireo vola trosain\'ny olona aminao sy ny trosanao amin\'ny olona, ao amin\'ny toerana iray.';
+
+  @override
+  String get onboardingTitle2 => 'Vola miditra sy mivoaka';
+
+  @override
+  String get onboardingBody2 =>
+      'Asehona ny vola tokony horaisina sy ny vola tokony haloa, miaraka amin\'ny toe-bolanao.';
+
+  @override
+  String get onboardingTitle3 => 'Fikafiky ny tanana';
+
+  @override
+  String get onboardingBody3 =>
+      'Swipe miankavia hamafa, miankavanana hanamarika voaloa. Tsindrio ny trosa iray hisafidianana fandoavana.';
+
+  @override
+  String get onboardingSkip => 'Atsaharo';
+
+  @override
+  String get onboardingNext => 'Manaraka';
+
+  @override
+  String get onboardingStart => 'Manomboka';
 }

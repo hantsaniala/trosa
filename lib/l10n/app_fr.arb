@@ -1,0 +1,170 @@
+{
+  "@@locale": "fr",
+  "appName": "Trosa",
+  "moneyToReceive": "Argent à recevoir",
+  "moneyToPay": "Argent à payer",
+  "balance": "Votre solde",
+  "currencyPrefix": "{symbol} ",
+  "@currencyPrefix": {
+    "placeholders": {
+      "symbol": {
+        "type": "String"
+      }
+    }
+  },
+  "debtListTitle": "Liste des dettes",
+  "addDebt": "Ajouter une dette",
+  "editDebt": "Modifier la dette",
+  "deleteDebtTitle": "Supprimer la dette",
+  "deleteDebtMessage": "Voulez-vous vraiment supprimer cette dette ?",
+  "no": "NON",
+  "yes": "OUI",
+  "about": "À propos",
+  "stats": "Statistiques",
+  "settings": "Réglages",
+  "sortByDate": "Date",
+  "sortByOwner": "Nom",
+  "sortByAmount": "Montant",
+  "shareAppMessage": "Venez utiliser {appUrl}",
+  "@shareAppMessage": {
+    "placeholders": {
+      "appUrl": {
+        "type": "String"
+      }
+    }
+  },
+  "searchHint": "Rechercher (nom, note, catégorie)...",
+  "filterAll": "Tout",
+  "filterUnpaid": "Non payées",
+  "filterPaid": "Payées",
+  "filterOverdue": "En retard",
+  "paidBadge": "Payée",
+  "remainingLabel": "Reste",
+  "remainingText": "Reste {amount}",
+  "@remainingText": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "amountLabel": "Montant",
+  "currencySuffix": "{symbol}",
+  "@currencySuffix": {
+    "placeholders": {
+      "symbol": {
+        "type": "String"
+      }
+    }
+  },
+  "amountRequired": "Veuillez saisir un montant.",
+  "ownerLabel": "La personne",
+  "ownerRequired": "Veuillez saisir le nom de la personne.",
+  "dueDateLabel": "À rendre le ",
+  "noteLabel": "Note",
+  "paidAmountLabel": "Montant déjà payé",
+  "categoryLabel": "Catégorie",
+  "noCategory": "Aucune catégorie",
+  "categoryFamily": "Famille",
+  "categoryFriends": "Amis",
+  "categoryWork": "Travail",
+  "categoryOther": "Autre",
+  "recurringLabel": "Répéter tous les N jours (0 = jamais)",
+  "aboutTitle": "À propos de Trosa",
+  "aboutDescription": "Application pour suivre les dettes à payer et à récupérer.",
+  "poweredBy": "Propulsé par",
+  "deletedSnackBar": "Dette supprimée",
+  "undoAction": "ANNULER",
+  "settingsTitle": "Réglages",
+  "currencyLabel": "Devise",
+  "themeLabel": "Thème",
+  "themeSystem": "Système",
+  "themeLight": "Clair",
+  "themeDark": "Sombre",
+  "languageLabel": "Langue",
+  "languageMg": "Malagasy",
+  "languageFr": "Français",
+  "languageEn": "English",
+  "backupExport": "Exporter CSV",
+  "backupImport": "Importer CSV",
+  "backupImported": "{count} dettes importées",
+  "@backupImported": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupFailed": "Échec de l'exportation",
+  "jsonExport": "Exporter JSON",
+  "jsonImport": "Importer JSON",
+  "jsonImported": "{count} dettes et réglages restaurés",
+  "@jsonImported": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationBody": "La dette de {owner} doit être remboursée",
+  "@notificationBody": {
+    "placeholders": {
+      "owner": {
+        "type": "String"
+      }
+    }
+  },
+  "statsTitle": "Statistiques",
+  "statsTotal": "Toutes les dettes",
+  "statsPaid": "Payées",
+  "statsOutstanding": "En cours",
+  "statsMonthly": "Montants mensuels",
+  "statsTopOwners": "Principaux débiteurs",
+  "statsEmpty": "Aucune dette enregistrée pour le moment.",
+  "statsTrend": "Évolution de votre solde",
+  "statsShare": "Partager le rapport",
+  "reminderSection": "Rappels",
+  "reminderEnabledLabel": "Activer le rappel",
+  "reminderLeadLabel": "Avant la date d'échéance",
+  "reminderLeadSameDay": "Le jour même",
+  "reminderLeadOneDay": "1 jour avant",
+  "reminderLeadTwoDays": "2 jours avant",
+  "reminderLeadOneWeek": "1 semaine avant",
+  "reminderTimeLabel": "Heure du rappel",
+  "paymentDialogTitle": "Enregistrer un paiement",
+  "paymentHint": "Combien a été payé ?",
+  "paymentRecorded": "Paiement enregistré",
+  "recordPaymentAction": "Enregistrer un paiement",
+  "markPaidAction": "Marquer comme payée",
+  "editAction": "Modifier",
+  "settledLabel": "Payée le {date}",
+  "@settledLabel": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "progressPaid": "Payée à {percent}%",
+  "@progressPaid": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "addCategory": "Nouvelle catégorie",
+  "newCategoryHint": "Nom de la catégorie",
+  "categoryAdded": "Catégorie ajoutée",
+  "categoryExists": "Cette catégorie existe déjà",
+  "contactLabel": "Choisir un contact du téléphone",
+  "onboardingTitle1": "Bienvenue sur Trosa",
+  "onboardingBody1": "Notez l'argent qu'on vous doit et vos dettes, au même endroit.",
+  "onboardingTitle2": "Argent entrant et sortant",
+  "onboardingBody2": "Visualisez l'argent à recevoir, à payer et votre solde.",
+  "onboardingTitle3": "Gestes",
+  "onboardingBody3": "Glissez à gauche pour supprimer, à droite pour marquer payé. Touchez une dette pour enregistrer un paiement.",
+  "onboardingSkip": "Passer",
+  "onboardingNext": "Suivant",
+  "onboardingStart": "Commencer"
+}

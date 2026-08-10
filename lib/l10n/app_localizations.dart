@@ -5,6 +5,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
+import 'app_localizations_en.dart';
+import 'app_localizations_fr.dart';
 import 'app_localizations_mg.dart';
 
 // ignore_for_file: type=lint
@@ -92,7 +94,11 @@ abstract class AppLocalizations {
   ];
 
   /// A list of this localizations delegate's supported locales.
-  static const List<Locale> supportedLocales = <Locale>[Locale('mg')];
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('en'),
+    Locale('fr'),
+    Locale('mg')
+  ];
 
   /// No description provided for @appName.
   ///
@@ -412,6 +418,30 @@ abstract class AppLocalizations {
   /// **'Maizina'**
   String get themeDark;
 
+  /// No description provided for @languageLabel.
+  ///
+  /// In mg, this message translates to:
+  /// **'Fiteny'**
+  String get languageLabel;
+
+  /// No description provided for @languageMg.
+  ///
+  /// In mg, this message translates to:
+  /// **'Malagasy'**
+  String get languageMg;
+
+  /// No description provided for @languageFr.
+  ///
+  /// In mg, this message translates to:
+  /// **'Français'**
+  String get languageFr;
+
+  /// No description provided for @languageEn.
+  ///
+  /// In mg, this message translates to:
+  /// **'English'**
+  String get languageEn;
+
   /// No description provided for @backupExport.
   ///
   /// In mg, this message translates to:
@@ -435,6 +465,24 @@ abstract class AppLocalizations {
   /// In mg, this message translates to:
   /// **'Tsy nahomby ny fanondranana'**
   String get backupFailed;
+
+  /// No description provided for @jsonExport.
+  ///
+  /// In mg, this message translates to:
+  /// **'Export JSON'**
+  String get jsonExport;
+
+  /// No description provided for @jsonImport.
+  ///
+  /// In mg, this message translates to:
+  /// **'Import JSON'**
+  String get jsonImport;
+
+  /// No description provided for @jsonImported.
+  ///
+  /// In mg, this message translates to:
+  /// **'Trosa {count} sy ny fikirana no naverina'**
+  String jsonImported(int count);
 
   /// No description provided for @notificationBody.
   ///
@@ -483,6 +531,198 @@ abstract class AppLocalizations {
   /// In mg, this message translates to:
   /// **'Mbola tsy misy trosa voasoratra.'**
   String get statsEmpty;
+
+  /// No description provided for @statsTrend.
+  ///
+  /// In mg, this message translates to:
+  /// **'Fivoaran\'ny toe-bolanao'**
+  String get statsTrend;
+
+  /// No description provided for @statsShare.
+  ///
+  /// In mg, this message translates to:
+  /// **'Hizara tatitra'**
+  String get statsShare;
+
+  /// No description provided for @reminderSection.
+  ///
+  /// In mg, this message translates to:
+  /// **'Fampahatsiahivana'**
+  String get reminderSection;
+
+  /// No description provided for @reminderEnabledLabel.
+  ///
+  /// In mg, this message translates to:
+  /// **'Alefa ny fampahatsiahivana'**
+  String get reminderEnabledLabel;
+
+  /// No description provided for @reminderLeadLabel.
+  ///
+  /// In mg, this message translates to:
+  /// **'Alohan\'ny andro haverina'**
+  String get reminderLeadLabel;
+
+  /// No description provided for @reminderLeadSameDay.
+  ///
+  /// In mg, this message translates to:
+  /// **'Andro iray ihany'**
+  String get reminderLeadSameDay;
+
+  /// No description provided for @reminderLeadOneDay.
+  ///
+  /// In mg, this message translates to:
+  /// **'Andro 1 aloha'**
+  String get reminderLeadOneDay;
+
+  /// No description provided for @reminderLeadTwoDays.
+  ///
+  /// In mg, this message translates to:
+  /// **'Andro 2 aloha'**
+  String get reminderLeadTwoDays;
+
+  /// No description provided for @reminderLeadOneWeek.
+  ///
+  /// In mg, this message translates to:
+  /// **'Herinandro 1 aloha'**
+  String get reminderLeadOneWeek;
+
+  /// No description provided for @reminderTimeLabel.
+  ///
+  /// In mg, this message translates to:
+  /// **'Ora fampahatsiahivana'**
+  String get reminderTimeLabel;
+
+  /// No description provided for @paymentDialogTitle.
+  ///
+  /// In mg, this message translates to:
+  /// **'Rekordera fandoavana'**
+  String get paymentDialogTitle;
+
+  /// No description provided for @paymentHint.
+  ///
+  /// In mg, this message translates to:
+  /// **'Ohatrinona no voaloa?'**
+  String get paymentHint;
+
+  /// No description provided for @paymentRecorded.
+  ///
+  /// In mg, this message translates to:
+  /// **'Voarakitra ny fandoavana'**
+  String get paymentRecorded;
+
+  /// No description provided for @recordPaymentAction.
+  ///
+  /// In mg, this message translates to:
+  /// **'Rekordera fandoavana'**
+  String get recordPaymentAction;
+
+  /// No description provided for @markPaidAction.
+  ///
+  /// In mg, this message translates to:
+  /// **'Marika ho voaloa'**
+  String get markPaidAction;
+
+  /// No description provided for @editAction.
+  ///
+  /// In mg, this message translates to:
+  /// **'Hanova'**
+  String get editAction;
+
+  /// No description provided for @settledLabel.
+  ///
+  /// In mg, this message translates to:
+  /// **'Voaloa tamin\'ny {date}'**
+  String settledLabel(String date);
+
+  /// No description provided for @progressPaid.
+  ///
+  /// In mg, this message translates to:
+  /// **'Voaloa {percent}%'**
+  String progressPaid(int percent);
+
+  /// No description provided for @addCategory.
+  ///
+  /// In mg, this message translates to:
+  /// **'Sokajy vaovao'**
+  String get addCategory;
+
+  /// No description provided for @newCategoryHint.
+  ///
+  /// In mg, this message translates to:
+  /// **'Anaran\'ny sokajy'**
+  String get newCategoryHint;
+
+  /// No description provided for @categoryAdded.
+  ///
+  /// In mg, this message translates to:
+  /// **'Nampidirina ny sokajy'**
+  String get categoryAdded;
+
+  /// No description provided for @categoryExists.
+  ///
+  /// In mg, this message translates to:
+  /// **'Efa misy io sokajy io'**
+  String get categoryExists;
+
+  /// No description provided for @contactLabel.
+  ///
+  /// In mg, this message translates to:
+  /// **'Misafidy olona amin\'ny finday'**
+  String get contactLabel;
+
+  /// No description provided for @onboardingTitle1.
+  ///
+  /// In mg, this message translates to:
+  /// **'Tongasoa eto amin\'ny Trosa'**
+  String get onboardingTitle1;
+
+  /// No description provided for @onboardingBody1.
+  ///
+  /// In mg, this message translates to:
+  /// **'Raketo ireo vola trosain\'ny olona aminao sy ny trosanao amin\'ny olona, ao amin\'ny toerana iray.'**
+  String get onboardingBody1;
+
+  /// No description provided for @onboardingTitle2.
+  ///
+  /// In mg, this message translates to:
+  /// **'Vola miditra sy mivoaka'**
+  String get onboardingTitle2;
+
+  /// No description provided for @onboardingBody2.
+  ///
+  /// In mg, this message translates to:
+  /// **'Asehona ny vola tokony horaisina sy ny vola tokony haloa, miaraka amin\'ny toe-bolanao.'**
+  String get onboardingBody2;
+
+  /// No description provided for @onboardingTitle3.
+  ///
+  /// In mg, this message translates to:
+  /// **'Fikafiky ny tanana'**
+  String get onboardingTitle3;
+
+  /// No description provided for @onboardingBody3.
+  ///
+  /// In mg, this message translates to:
+  /// **'Swipe miankavia hamafa, miankavanana hanamarika voaloa. Tsindrio ny trosa iray hisafidianana fandoavana.'**
+  String get onboardingBody3;
+
+  /// No description provided for @onboardingSkip.
+  ///
+  /// In mg, this message translates to:
+  /// **'Atsaharo'**
+  String get onboardingSkip;
+
+  /// No description provided for @onboardingNext.
+  ///
+  /// In mg, this message translates to:
+  /// **'Manaraka'**
+  String get onboardingNext;
+
+  /// No description provided for @onboardingStart.
+  ///
+  /// In mg, this message translates to:
+  /// **'Manomboka'**
+  String get onboardingStart;
 }
 
 class _AppLocalizationsDelegate
@@ -496,7 +736,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['mg'].contains(locale.languageCode);
+      <String>['en', 'fr', 'mg'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -505,6 +745,10 @@ class _AppLocalizationsDelegate
 AppLocalizations lookupAppLocalizations(Locale locale) {
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
+    case 'en':
+      return AppLocalizationsEn();
+    case 'fr':
+      return AppLocalizationsFr();
     case 'mg':
       return AppLocalizationsMg();
   }
